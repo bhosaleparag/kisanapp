@@ -74,7 +74,7 @@ export const marketplaceSchema = z.object({
 
 // 4. Video Guidance Tutorial Schema
 export const videoSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   title: z
     .string()
     .min(3, { message: 'व्हिडिओचे शीर्षक किमान ३ अक्षरी असावे.' })
@@ -84,17 +84,16 @@ export const videoSchema = z.object({
     .url({ message: 'कृपया वैध व्हिडिओ URL प्रविष्ट करा.' }),
   thumbnailUri: z
     .string()
-    .url({ message: 'कृपया वैध थंबनेल चित्र URL प्रविष्ट करा.' })
     .optional(),
-  category: z.enum(['organic', 'disease', 'technology'], {
-    errorMap: () => ({ message: 'कृपया वैध वर्ग निवडा (सेंद्रिय शेती / पीक रोग / आधुनिक तंत्रज्ञान).' }),
-  }),
+  category: z.string().optional(),
+  categoryLabel: z.string().optional(),
   author: z
     .string()
     .min(2, { message: 'मार्गदर्शकाचे नाव आवश्यक आहे.' }),
-  subject: z
-    .string()
-    .min(2, { message: 'विषय आवश्यक आहे.' }),
+  subject: z.string().min(1, { message: 'कृपया वैध विषय निवडा.' }).refine(
+    (val) => ['organic', 'disease', 'technology', 'breed_management', 'feed_management', 'manage_animal'].includes(val),
+    { message: 'कृपया वैध विषय निवडा.' }
+  ),
   company: z
     .string()
     .min(2, { message: 'कंपनी/संस्थेचे नाव आवश्यक आहे.' }),
@@ -102,7 +101,9 @@ export const videoSchema = z.object({
     .string()
     .min(10, { message: 'वर्णन किमान १० अक्षरी असावे.' })
     .max(500, { message: 'वर्णन ५०० अक्षरांपेक्षा जास्त नसावे.' }),
-  duration: z.string().optional(), // e.g. "०५:२०"
+  duration: z
+    .string()
+    .min(1, { message: 'व्हिडिओचा कालावधी आवश्यक आहे (उदा. ०५:२०).' }),
 });
 
 // 5. User Profile Form Schema

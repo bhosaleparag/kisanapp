@@ -58,7 +58,7 @@ export default function AppNavigator() {
     return unsubscribe;
   }, [setUser]);
 
-  const isLoggedIn = !!user; 
+  const isLoggedIn = !!user;
 
   return (
     <NavigationContainer>
@@ -67,16 +67,16 @@ export default function AppNavigator() {
           // Main flow with bottom tabs and profile stack screen
           <>
             <Stack.Screen name="Main" component={TabNavigator} />
-            <Stack.Screen 
-              name="Profile" 
-              component={ProfileScreen} 
-              options={{ 
-                headerShown: true, 
+            <Stack.Screen
+              name="Profile"
+              component={ProfileScreen}
+              options={{
+                headerShown: true,
                 title: 'माझी प्रोफाईल',
                 headerStyle: { backgroundColor: '#1B5E20' },
                 headerTintColor: '#FFFFFF',
                 headerTitleStyle: { fontWeight: 'bold' }
-              }} 
+              }}
             />
           </>
         ) : (

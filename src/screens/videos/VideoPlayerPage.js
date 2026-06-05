@@ -3,52 +3,62 @@ import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Card as PaperCard } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING } from '../../constants/theme';
+import { STRINGS } from '../../constants/strings';
 import VideoPlayer from '../../components/VideoPlayer';
 
 export default function VideoPlayerPage({ selectedVideo, onBack }) {
+  const SUBJECT_MAPPING = {
+    breed_management: STRINGS.videos.breedManagement,
+    feed_management: STRINGS.videos.feedManagement,
+    manage_animal: STRINGS.videos.animalManagement,
+    organic: STRINGS.videos.organicFarming,
+    disease: STRINGS.videos.cropDisease,
+    technology: STRINGS.videos.modernTech,
+  };
+
+  const displaySubject = SUBJECT_MAPPING[selectedVideo.subject] || selectedVideo.subject;
+
   return (
     <View style={styles.container}>
-      {/* Branded Navigation Back Button Bar */}
       <View style={styles.playerHeaderBar}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={COLORS.primary} />
-          <Text style={styles.backButtonText}>मागे जा</Text>
+          <Text style={styles.backButtonText}>{STRINGS.videos.playerBackBtn}</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={{ flex: 1 }}>
-        {/* Pinned Video Player Streaming Widget */}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
         <VideoPlayer videoUrl={selectedVideo.videoUrl} title={selectedVideo.title} />
 
-        {/* Video Detailed Agricultural Data Card */}
         <PaperCard style={styles.activeDetailsCard} mode="outlined">
           <PaperCard.Content>
-            {/* Top Category Badge & Duration Header row */}
             <View style={styles.activeHeaderRow}>
               <Text style={styles.activeCategoryText}>{selectedVideo.categoryLabel}</Text>
-              <Text style={styles.activeDurationText}>⏱️ {selectedVideo.duration} मिनिटे</Text>
+              <Text style={styles.activeDurationText}>
+                {STRINGS.videos.durationLabel}
+                {selectedVideo.duration}
+                {STRINGS.videos.minutesLabel}
+              </Text>
             </View>
 
             <Text style={styles.activeTitleText}>{selectedVideo.title}</Text>
 
-            {/* Structured Metadata details block */}
             <View style={styles.metadataBlock}>
               <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>👤 मार्गदर्शक:</Text>
+                <Text style={styles.metaLabel}>{STRINGS.videos.guideLabel}</Text>
                 <Text style={styles.metaValue}>{selectedVideo.author}</Text>
               </View>
               <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>📚 विषय:</Text>
-                <Text style={styles.metaValue}>{selectedVideo.subject}</Text>
+                <Text style={styles.metaLabel}>{STRINGS.videos.subjectLabel}</Text>
+                <Text style={styles.metaValue}>{displaySubject}</Text>
               </View>
               <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>🏢 कंपनी/संस्था:</Text>
+                <Text style={styles.metaLabel}>{STRINGS.videos.companyLabel}</Text>
                 <Text style={styles.metaValue}>{selectedVideo.company}</Text>
               </View>
             </View>
 
-            {/* Detailed Description block */}
-            <Text style={styles.descriptionSectionTitle}>व्हिडिओ माहिती:</Text>
+            <Text style={styles.descriptionSectionTitle}>{STRINGS.videos.videoInfoTitle}</Text>
             <Text style={styles.activeDescriptionText}>{selectedVideo.description}</Text>
           </PaperCard.Content>
         </PaperCard>
@@ -150,5 +160,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: COLORS.textSecondary,
+  },
+  scrollContent: {
+    paddingBottom: 60,
   },
 });

@@ -1,19 +1,43 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import YoutubePlayer from 'react-native-youtube-iframe';
 import { Card } from 'react-native-paper';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../constants/theme';
 
-/**
- * Premium Farmer-Friendly VideoPlayer Component
- * Built on the modern expo-video. Streams crop guidance videos with strictly NO download options.
- */
-export default function VideoPlayer({ videoUrl, title, style = {} }) {
-  // Initialize the modern expo-video player
+// Helper to extract YouTube video ID
+const getYoutubeVideoId = (url) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return match && match[2].length === 11 ? match[2] : null;
+};
+
+// Stream player component using expo-video (isolated to respect React Hook rules)
+function StreamPlayer({ videoUrl }) {
   const player = useVideoPlayer(videoUrl, (playerInstance) => {
     playerInstance.loop = false;
     playerInstance.muted = false;
   });
+
+  return (
+    <VideoView
+      player={player}
+      style={styles.video}
+      fullscreenOptions={{ isEnabled: true }}
+      allowsPictureInPicture={true}
+      showsPlaybackControls={true} // Renders standard play/seek/fullscreen controls with strictly NO download options
+      contentFit="contain"
+    />
+  );
+}
+
+/**
+ * Premium Farmer-Friendly VideoPlayer Component
+ * Supports both standard video streams (using expo-video) and YouTube videos (using react-native-youtube-iframe).
+ */
+export default function VideoPlayer({ videoUrl, title, style = {} }) {
+  const youtubeId = getYoutubeVideoId(videoUrl);
 
   return (
     <Card style={[styles.card, style]} mode="outlined">
@@ -26,14 +50,17 @@ export default function VideoPlayer({ videoUrl, title, style = {} }) {
       )}
       
       <View style={styles.videoContainer}>
-        <VideoView
-          player={player}
-          style={styles.video}
-          fullscreenOptions={{ isEnabled: true }}
-          allowsPictureInPicture={true}
-          showsPlaybackControls={true} // Renders standard play/seek/fullscreen controls with strictly NO download options
-          contentFit="contain"
-        />
+        {youtubeId ? (
+          <View style={styles.youtubeWrapper}>
+            <YoutubePlayer
+              height={220}
+              videoId={youtubeId}
+              webViewStyle={{ opacity: 0.99 }}
+            />
+          </View>
+        ) : (
+          <StreamPlayer videoUrl={videoUrl} />
+        )}
       </View>
     </Card>
   );
@@ -69,5 +96,9 @@ const styles = StyleSheet.create({
   video: {
     width: '100%',
     height: '100%',
+  },
+  youtubeWrapper: {
+    width: '100%',
+    height: 220,
   },
 });

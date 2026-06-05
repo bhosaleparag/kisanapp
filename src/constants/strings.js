@@ -19,7 +19,9 @@ export const STRINGS = {
     camera: "कॅमेरा वापरा",
     gallery: "गॅलरीमधून निवडा",
     removePhoto: "फोटो काढा",
-    permissionDenied: "परवानगी नाकारली. कृपया सेटिंग्जमधून परवानग्या सुरू करा."
+    permissionDenied: "परवानगी नाकारली. कृपया सेटिंग्जमधून परवानग्या सुरू करा.",
+    success: "यशस्वी",
+    errorTitle: "त्रुटी"
   },
   nav: {
     home: "मुख्यपृष्ठ",
@@ -62,9 +64,82 @@ export const STRINGS = {
   },
   videos: {
     title: "मार्गदर्शन व्हिडिओ",
+    addVideo: "नवीन व्हिडिओ जोडा",
     organicFarming: "सेंद्रिय शेती",
     cropDisease: "पीक रोग व्यवस्थापन",
-    modernTech: "आधुनिक तंत्रज्ञान"
+    modernTech: "आधुनिक तंत्रज्ञान",
+    
+    // New strings for simplified UI
+    subtitle: "शेती व गोठा व्यवस्थापनासाठी तज्ञांचे मोफत मार्गदर्शन",
+    selectInfoType: "माहितीचा प्रकार निवडा",
+    subjects: "विषय (Subjects)",
+    subjectsSubtitle: "६ प्रमुख विषय व विभाग",
+    subjectsDesc: "पैदावर सुधारणा, सकस चारा नियोजन, पशु आरोग्य आणि सेंद्रिय शेती संबंधित मार्गदर्शन.",
+    
+    experts: "मार्गदर्शक (Guides & Experts)",
+    expertsSubtitle: "तज्ञ व अनुभवी वैज्ञानिक",
+    expertsDesc: "कृषी विद्यापीठाचे प्राध्यापक, कृषी शास्त्रज्ञ आणि यशस्वी शेतकऱ्यांचे अनुभव व सल्ले.",
+    
+    companies: "संस्था व कंपन्या (Institutions)",
+    companiesSubtitle: "शासकीय संस्था व कंपन्या",
+    companiesDesc: "कृषी विभागाच्या योजना, सह्याद्री फार्म्स व कृषी विज्ञान केंद्रांचे अधिकृत व्हिडिओ.",
+    
+    selectSubject: "विषय निवडा",
+    selectExpert: "मार्गदर्शक निवडा",
+    selectCompany: "संस्था निवडा",
+    selectDefault: "निवड करा",
+    
+    searchPlaceholder: "येथे शोधा...",
+    videoSearchPlaceholder: "व्हिडिओ शोधा...",
+    voiceSearchTitle: "कृषी व्हॉइस सर्च (Voice Search)",
+    voiceSearchActive: "मराठी व्हॉइस असिस्टंट सुरू आहे...\nकृपया तुमच्या आवाजात सर्च करायचा शब्द बोला.",
+    voiceSearchSpeakVideo: "मराठी व्हॉइस असिस्टंट सुरू आहे...\nकृपया तुमच्या आवाजात व्हिडिओचा विषय बोला.",
+    voiceSearchCancel: "रद्द करा",
+    voiceSearchOk: "ठीक आहे",
+    voiceSearchNoMatch: "काही शब्द ओळखता आले नाहीत. कृपया लिहून शोधा.",
+    voiceSearchResultTitle: "व्हॉइस सर्च परिणाम",
+    
+    videoListTitle: "मार्गदर्शन व्हिडिओ यादी",
+    backBtn: "मागे",
+    playerBackBtn: "मागे जा",
+    videoInfoTitle: "व्हिडिओ माहिती:",
+    durationLabel: "⏱️ ",
+    minutesLabel: " मिनिटे",
+    guideLabel: "👤 मार्गदर्शक:",
+    subjectLabel: "📚 विषय:",
+    companyLabel: "🏢 कंपनी/संस्था:",
+    
+    // Subject categories
+    breedManagement: "पैदावर व्यवस्थापन",
+    breedManagementDesc: "जातीवंत जनावरांची निवड, पैदावर आणि वंश सुधारणा",
+    
+    feedManagement: "चारा व खाद्य व्यवस्थापन",
+    feedManagementDesc: "सकस पशुखाद्य, मुरघास (सायलेज) आणि चारा नियोजन",
+    
+    animalManagement: "जनावरांचे व्यवस्थापन",
+    animalManagementDesc: "गोठा स्वच्छता, आरोग्य आणि दूध उत्पादन वाढ",
+    
+    organicFarmingDesc: "विषमुक्त शेती, कंपोस्ट खत आणि सेंद्रिय औषध फवारणी",
+    cropDiseaseDesc: "पिकांवरील रोग नियंत्रण आणि जैविक कीटकनाशके",
+    modernTechDesc: "ड्रोन फवारणी, आधुनिक यंत्रे आणि स्मार्ट शेती पद्धती",
+
+    // Add Video Form strings
+    saveSuccess: "व्हिडिओ यशस्वीरीत्या जतन केला आहे.",
+    saveError: "व्हिडिओ जतन करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.",
+    formTitleLabel: "व्हिडिओचे शीर्षक (Video Title)",
+    formTitlePlaceholder: "उदा. अधिक दुधासाठी गोठा व्यवस्थापन",
+    formVideoUrlLabel: "यूट्यूब व्हिडिओ लिंक (YouTube URL)",
+    formVideoUrlPlaceholder: "उदा. https://www.youtube.com/watch?v=...",
+    formSubjectLabel: "विषय / श्रेणी (Subject / Category)",
+    formSubjectPlaceholder: "श्रेणी निवडा...",
+    formAuthorLabel: "मार्गदर्शक (Expert / Guide)",
+    formAuthorPlaceholder: "उदा. डॉ. हरीश माने",
+    formCompanyLabel: "संस्था / कंपनी (Institution)",
+    formCompanyPlaceholder: "उदा. सह्याद्री फार्म",
+    formDurationLabel: "कालावधी (Duration)",
+    formDurationPlaceholder: "उदा. ०५:२०",
+    formDescriptionLabel: "व्हिडिओचे सविस्तर वर्णन (Description)",
+    formDescriptionPlaceholder: "व्हिडिओबद्दल माहिती लिहा..."
   },
   auth: {
     login: "लॉगिन करा",

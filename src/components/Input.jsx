@@ -32,7 +32,11 @@ export default function Input({
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         error={error}
-        style={[styles.input, style]}
+        style={[
+          styles.input,
+          props.multiline && styles.multilineInput,
+          style,
+        ]}
         outlineColor={COLORS.border}
         activeOutlineColor={COLORS.primary}
         placeholderTextColor={COLORS.textSecondary}
@@ -65,6 +69,11 @@ const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.fontSizeMd, // 18px body font for optimal legibility in daylight
     height: 60, // Premium large field height for easy entry
     backgroundColor: COLORS.surface,
+  },
+  multilineInput: {
+    height: 140, // Taller for description/textarea fields
+    textAlignVertical: 'top', // Align text to the top for Android
+    paddingTop: SPACING.sm, // Add padding at the top
   },
   errorText: {
     fontSize: TYPOGRAPHY.fontSizeSm,
