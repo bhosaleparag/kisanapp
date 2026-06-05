@@ -1,0 +1,160 @@
+import { z } from 'zod';
+
+/**
+ * Form Validation Schemas
+ * Standard Zod declarations representing input limitations.
+ * Features highly detailed error states written completely in Marathi.
+ */
+
+// 1. Mobile OTP Authentication Schema
+export const authSchema = z.object({
+  phone: z
+    .string()
+    .min(1, { message: 'मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
+});
+
+// 2. Cowshed livestock registration Schema
+export const cowshedSchema = z.object({
+  cowName: z
+    .string()
+    .min(1, { message: 'जनावराचे नाव किंवा टॅग नंबर आवश्यक आहे.' })
+    .max(50, { message: 'नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  breed: z
+    .string()
+    .min(1, { message: 'जनावराची जात आवश्यक आहे.' })
+    .max(50, { message: 'जात ५० अक्षरांपेक्षा जास्त नसावी.' }),
+  age: z
+    .string()
+    .min(1, { message: 'वय आवश्यक आहे.' })
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val >= 0.1 && val <= 30, {
+      message: 'वय ०.१ ते ३० वर्षांच्या दरम्यान असावे.',
+    }),
+  milkYield: z
+    .string()
+    .min(1, { message: 'दैनिक दूध क्षमता आवश्यक आहे.' })
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val >= 0 && val <= 100, {
+      message: 'दूध क्षमता ० ते १०० लिटरच्या दरम्यान असावी.',
+    }),
+  healthStatus: z.enum(['healthy', 'sick'], {
+    errorMap: () => ({ message: 'कृपया आरोग्य स्थिती निवडा.' }),
+  }),
+});
+
+// 3. Marketplace listing post Schema
+export const marketplaceSchema = z.object({
+  title: z
+    .string()
+    .min(3, { message: 'जाहिरातीचे नाव किमान ३ अक्षरी असावे.' })
+    .max(80, { message: 'जाहिरातीचे नाव ८० अक्षरांपेक्षा जास्त नसावे.' }),
+  category: z
+    .string()
+    .min(1, { message: 'कृपया वर्ग निवडा (चारा / औषधे / पशु).' }),
+  price: z
+    .string()
+    .min(1, { message: 'किंमत आवश्यक आहे.' })
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'किंमत शून्यापेक्षा जास्त असावी.',
+    }),
+  sellerName: z
+    .string()
+    .min(2, { message: 'विक्रेत्याचे नाव किमान २ अक्षरी असावे.' }),
+  contactPhone: z
+    .string()
+    .min(1, { message: 'संपर्कासाठी मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
+  description: z
+    .string()
+    .max(400, { message: 'माहिती ४०० अक्षरांपेक्षा जास्त नसावी.' })
+    .optional(),
+});
+
+// 4. Video Guidance Tutorial Schema
+export const videoSchema = z.object({
+  id: z.string(),
+  title: z
+    .string()
+    .min(3, { message: 'व्हिडिओचे शीर्षक किमान ३ अक्षरी असावे.' })
+    .max(100, { message: 'शीर्षक १०० अक्षरांपेक्षा जास्त नसावे.' }),
+  videoUrl: z
+    .string()
+    .url({ message: 'कृपया वैध व्हिडिओ URL प्रविष्ट करा.' }),
+  thumbnailUri: z
+    .string()
+    .url({ message: 'कृपया वैध थंबनेल चित्र URL प्रविष्ट करा.' })
+    .optional(),
+  category: z.enum(['organic', 'disease', 'technology'], {
+    errorMap: () => ({ message: 'कृपया वैध वर्ग निवडा (सेंद्रिय शेती / पीक रोग / आधुनिक तंत्रज्ञान).' }),
+  }),
+  author: z
+    .string()
+    .min(2, { message: 'मार्गदर्शकाचे नाव आवश्यक आहे.' }),
+  subject: z
+    .string()
+    .min(2, { message: 'विषय आवश्यक आहे.' }),
+  company: z
+    .string()
+    .min(2, { message: 'कंपनी/संस्थेचे नाव आवश्यक आहे.' }),
+  description: z
+    .string()
+    .min(10, { message: 'वर्णन किमान १० अक्षरी असावे.' })
+    .max(500, { message: 'वर्णन ५०० अक्षरांपेक्षा जास्त नसावे.' }),
+  duration: z.string().optional(), // e.g. "०५:२०"
+});
+
+// 5. User Profile Form Schema
+export const profileSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: 'नाव किमान २ अक्षरी असावे.' })
+    .max(50, { message: 'नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  phone: z
+    .string()
+    .min(1, { message: 'मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
+  role: z.enum(['admin', 'buyer', 'seller', 'both'], {
+    errorMap: () => ({ message: 'कृपया तुमची भूमिका निवडा (प्रशासक / खरेदीदार / विक्रेता / दोन्ही).' }),
+  }),
+  village: z
+    .string()
+    .min(2, { message: 'गावाचे नाव आवश्यक आहे.' })
+    .max(50, { message: 'गावाचे नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  taluka: z
+    .string()
+    .min(2, { message: 'तालुक्याचे नाव आवश्यक आहे.' })
+    .max(50, { message: 'तालुक्याचे नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  district: z
+    .string()
+    .min(2, { message: 'जिल्ह्याचे नाव आवश्यक आहे.' })
+    .max(50, { message: 'जिल्ह्याचे नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  pincode: z
+    .string()
+    .min(1, { message: 'पिनकोड आवश्यक आहे.' })
+    .regex(/^[0-9]{6}$/, { message: 'कृपया अचूक ६ अंकी पिनकोड टाका.' }),
+  farmDetails: z.object({
+    totalArea: z
+      .string()
+      .min(1, { message: 'एकूण जमीन क्षेत्र आवश्यक आहे.' })
+      .transform((val) => parseFloat(val))
+      .refine((val) => !isNaN(val) && val >= 0, {
+        message: 'एकूण क्षेत्र शून्यापेक्षा मोठे असावे.',
+      }),
+    cultivatedArea: z
+      .string()
+      .min(1, { message: 'वापरातील क्षेत्र आवश्यक आहे.' })
+      .transform((val) => parseFloat(val))
+      .refine((val) => !isNaN(val) && val >= 0, {
+        message: 'वापरातील क्षेत्र शून्यापेक्षा मोठे असावे.',
+      }),
+    mainCrop: z
+      .string()
+      .min(2, { message: 'मुख्य पिकाचे नाव आवश्यक आहे.' })
+      .max(50, { message: 'पिकाचे नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  }).refine((data) => data.cultivatedArea <= data.totalArea, {
+    message: 'वापरातील क्षेत्र एकूण क्षेत्रापेक्षा जास्त नसावे.',
+    path: ['cultivatedArea'],
+  }),
+});
