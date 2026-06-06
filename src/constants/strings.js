@@ -98,6 +98,19 @@ export const STRINGS = {
     voiceSearchOk: "ठीक आहे",
     voiceSearchNoMatch: "काही शब्द ओळखता आले नाहीत. कृपया लिहून शोधा.",
     voiceSearchResultTitle: "व्हॉइस सर्च परिणाम",
+    voiceSearchPermissionReq: "मायक्रोफोन परवानगी आवश्यक आहे",
+    voiceSearchPermissionSettings: "व्हॉइस सर्च वापरण्यासाठी कृपया सेटिंग्जमध्ये मायक्रोफोन परवानगी सुरू करा.",
+    voiceSearchListening: "ऐकत आहे... बोला",
+    voiceSearchProcessing: "आवाज ओळखत आहे...",
+    voiceSearchSuggestionsTitle: "किंवा खालीलपैकी एकावर टॅप करा:",
+    voiceSearchSuggestions: [
+      "सेंद्रिय शेती",
+      "चारा नियोजन",
+      "गोठा व्यवस्थापन",
+      "दूध वाढवणे",
+      "दगडी रोग",
+      "ड्रोन तंत्रज्ञान"
+    ],
     
     videoListTitle: "मार्गदर्शन व्हिडिओ यादी",
     backBtn: "मागे",

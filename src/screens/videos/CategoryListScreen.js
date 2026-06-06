@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
+import VoiceSearchModal from '../../components/VoiceSearchModal';
 
 // Defined at module scope, utilizing centralized theme and localized constants
 const getSubjectsList = () => [
@@ -53,6 +54,7 @@ const getSubjectsList = () => [
 
 export default function CategoryListScreen({ type, videos, onSelectItem, onBack }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [voiceSearchVisible, setVoiceSearchVisible] = useState(false);
 
   const getDataList = () => {
     if (type === 'subject') {
@@ -103,25 +105,14 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
   };
 
   const handleVoiceSearch = () => {
-    Alert.alert(
-      STRINGS.videos.voiceSearchTitle,
-      STRINGS.videos.voiceSearchActive,
-      [
-        {
-          text: STRINGS.videos.voiceSearchCancel,
-          style: 'cancel',
-        },
-        {
-          text: STRINGS.videos.voiceSearchOk,
-          onPress: () => {
-            Alert.alert(
-              STRINGS.videos.voiceSearchResultTitle,
-              STRINGS.videos.voiceSearchNoMatch
-            );
-          },
-        },
-      ]
-    );
+    setVoiceSearchVisible(true);
+  };
+
+  const getVoiceSuggestions = () => {
+    const list = getDataList();
+    if (!list || list.length === 0) return STRINGS.videos.voiceSearchSuggestions;
+    // Extract titles and slice first 6 items for clean spacing in visual layout
+    return list.slice(0, 6).map((item) => item.title);
   };
 
   const getScreenTitle = () => {
@@ -192,6 +183,13 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
             <Text style={styles.emptyText}>{STRINGS.common.noData}</Text>
           </View>
         }
+      />
+
+      <VoiceSearchModal
+        visible={voiceSearchVisible}
+        onClose={() => setVoiceSearchVisible(false)}
+        onSearchResult={setSearchQuery}
+        suggestions={getVoiceSuggestions()}
       />
     </View>
   );

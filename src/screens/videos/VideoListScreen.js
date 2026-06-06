@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
+import VoiceSearchModal from '../../components/VoiceSearchModal';
 
 export default function VideoListScreen({ filter, videos, onSelectVideo, onBack }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [voiceSearchVisible, setVoiceSearchVisible] = useState(false);
 
   const getFilteredVideos = () => {
     const matched = videos.filter((v) => {
@@ -35,22 +37,25 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
   };
 
   const handleVoiceSearch = () => {
-    Alert.alert(
-      STRINGS.videos.voiceSearchTitle,
-      STRINGS.videos.voiceSearchSpeakVideo,
-      [
-        { text: STRINGS.videos.voiceSearchCancel, style: 'cancel' },
-        {
-          text: STRINGS.videos.voiceSearchOk,
-          onPress: () => {
-            Alert.alert(
-              STRINGS.videos.voiceSearchResultTitle,
-              STRINGS.videos.voiceSearchNoMatch
-            );
-          },
-        },
-      ]
-    );
+    setVoiceSearchVisible(true);
+  };
+
+  const getVoiceSuggestions = () => {
+    const list = getFilteredVideos();
+    if (!list || list.length === 0) return STRINGS.videos.voiceSearchSuggestions;
+
+    const keywords = [];
+    list.forEach((v) => {
+      // Split title by space and take first 2-3 words to create natural search terms
+      const words = v.title.split(' ');
+      if (words.length > 0) {
+        const phrase = words.slice(0, 3).join(' ');
+        if (!keywords.includes(phrase)) {
+          keywords.push(phrase);
+        }
+      }
+    });
+    return keywords.slice(0, 6);
   };
 
   const renderVideoItem = ({ item }) => (
@@ -122,6 +127,13 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
             <Text style={styles.emptyText}>{STRINGS.common.noData}</Text>
           </View>
         }
+      />
+
+      <VoiceSearchModal
+        visible={voiceSearchVisible}
+        onClose={() => setVoiceSearchVisible(false)}
+        onSearchResult={setSearchQuery}
+        suggestions={getVoiceSuggestions()}
       />
     </View>
   );

@@ -21,7 +21,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-video"
+      "expo-video",
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "व्हॉइस सर्च द्वारे पिके आणि पशुधनाची माहिती शोधण्यासाठी मायक्रोफोन परवानगी आवश्यक आहे.",
+          "speechRecognitionPermission": "व्हॉइस सर्च वापरून पिके आणि पशुधनाची माहिती शोधण्यासाठी बोलण्याची परवानगी आवश्यक आहे."
+        }
+      ]
     ]
   }
 }
