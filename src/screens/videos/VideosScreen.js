@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, Alert, KeyboardAvoidingView, Platform } f
 import { FAB, Portal, Modal, IconButton, Text, ActivityIndicator } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
 import { videoSchema } from '../../utils/schemas';
@@ -21,6 +22,7 @@ export default function VideosScreen() {
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([{ page: 'dashboard', params: {} }]);
   const [modalVisible, setModalVisible] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const user = useAppStore((state) => state.user);
   const isAdmin = user?.role === 'admin';
@@ -161,7 +163,7 @@ export default function VideosScreen() {
   const showFab = isAdmin && currentScreen.page !== 'player';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: currentScreen.page === 'player' ? 0 : insets.bottom }]}>
       {renderScreen()}
 
       {showFab && (
@@ -169,7 +171,7 @@ export default function VideosScreen() {
           icon="plus"
           label={STRINGS.videos.addVideo}
           color="#FFFFFF"
-          style={styles.fab}
+          style={[styles.fab, { bottom: insets.bottom }]}
           onPress={() => setModalVisible(true)}
         />
       )}

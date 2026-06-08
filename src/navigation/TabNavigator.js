@@ -9,11 +9,11 @@ import { auth } from '../services/firebase';
 import { useAppStore } from '../store/useAppStore';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/theme';
 import { STRINGS } from '../constants/strings';
-import HomeScreen from '../screens/shared/HomeScreen';
-import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
-import ServicesScreen from '../screens/services/ServicesScreen';
+// import HomeScreen from '../screens/shared/HomeScreen';
+// import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
+// import ServicesScreen from '../screens/services/ServicesScreen';
 import VideosScreen from '../screens/videos/VideosScreen';
-import CowshedScreen from '../screens/cowshed/CowshedScreen';
+// import CowshedScreen from '../screens/cowshed/CowshedScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -53,6 +53,7 @@ export default function TabNavigator() {
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
         tabBarStyle: {
+          display: 'none', // Hide bottom tab bar as we only have the video section
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : SPACING.sm,
           paddingTop: SPACING.xs,
@@ -99,6 +100,7 @@ export default function TabNavigator() {
         ),
       })}
     >
+      {/*
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -120,6 +122,7 @@ export default function TabNavigator() {
           title: STRINGS.nav.services,
         }}
       />
+      */}
       <Tab.Screen
         name="Videos"
         component={VideosScreen}
@@ -127,6 +130,7 @@ export default function TabNavigator() {
           title: STRINGS.nav.videos,
         }}
       />
+      {/*
       <Tab.Screen
         name="Cowshed"
         component={CowshedScreen}
@@ -134,6 +138,7 @@ export default function TabNavigator() {
           title: STRINGS.nav.cowshed,
         }}
       />
+      */}
     </Tab.Navigator>
   );
 }

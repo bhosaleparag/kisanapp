@@ -30,7 +30,9 @@ export default function VideosDashboard({ onSelectCategory }) {
           </View>
           <MaterialCommunityIcons name="chevron-right" size={24} color={COLORS.textSecondary} />
         </View>
-        <Text style={styles.cardDescription}>{STRINGS.videos.subjectsDesc}</Text>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.cardDescription}>{STRINGS.videos.subjectsDesc}</Text>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -48,7 +50,9 @@ export default function VideosDashboard({ onSelectCategory }) {
           </View>
           <MaterialCommunityIcons name="chevron-right" size={24} color={COLORS.textSecondary} />
         </View>
-        <Text style={styles.cardDescription}>{STRINGS.videos.expertsDesc}</Text>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.cardDescription}>{STRINGS.videos.expertsDesc}</Text>
+        </View>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -66,7 +70,9 @@ export default function VideosDashboard({ onSelectCategory }) {
           </View>
           <MaterialCommunityIcons name="chevron-right" size={24} color={COLORS.textSecondary} />
         </View>
-        <Text style={styles.cardDescription}>{STRINGS.videos.companiesDesc}</Text>
+        <View style={styles.descriptionContainer}>
+          <Text style={styles.cardDescription}>{STRINGS.videos.companiesDesc}</Text>
+        </View>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -141,6 +147,7 @@ const styles = StyleSheet.create({
   },
   cardTitleBlock: {
     flex: 1,
+    marginRight: SPACING.sm,
   },
   cardTitle: {
     fontSize: 16,
@@ -153,10 +160,12 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
+  descriptionContainer: {
+    marginLeft: 60,
+  },
   cardDescription: {
     fontSize: 13,
     color: COLORS.textSecondary,
     lineHeight: 18,
-    marginLeft: 60,
   },
 });

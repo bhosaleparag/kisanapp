@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "KisanApp",
-    "slug": "KisanApp",
+    "name": "Linear Agriculture",
+    "slug": "linearagriculture",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app-logo.png",
@@ -10,6 +10,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.bhosaleparag.linearagriculture",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -22,6 +24,12 @@
     },
     "plugins": [
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ff8864c6-c3b5-4d23-a29f-cdf1f2efee56"
+      }
+    },
+    "owner": "linearagriculture"
   }
 }

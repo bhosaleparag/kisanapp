@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "107787654125",
+    "project_id": "linear-agriculture",
+    "storage_bucket": "linear-agriculture.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107787654125:android:235076d6b3c7446ab80de4",
+        "android_client_info": {
+          "package_name": "com.bhosaleparag.linearagriculture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEMUwVQbriGz39pMd5gza-Jr8MhqdJ1PM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
