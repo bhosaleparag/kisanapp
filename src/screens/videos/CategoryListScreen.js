@@ -1,66 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StyleSheet, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
-
-// Defined at module scope, utilizing centralized theme and localized constants
-const getSubjectsList = () => [
-  {
-    id: 'breed_management',
-    title: STRINGS.videos.breedManagement,
-    description: STRINGS.videos.breedManagementDesc,
-    icon: 'cow',
-    color: COLORS.primary,
-  },
-  {
-    id: 'feed_management',
-    title: STRINGS.videos.feedManagement,
-    description: STRINGS.videos.feedManagementDesc,
-    icon: 'sprout',
-    color: COLORS.success,
-  },
-  {
-    id: 'manage_animal',
-    title: STRINGS.videos.animalManagement,
-    description: STRINGS.videos.animalManagementDesc,
-    icon: 'home-heart',
-    color: COLORS.secondary,
-  },
-  {
-    id: 'organic',
-    title: STRINGS.videos.organicFarming,
-    description: STRINGS.videos.organicFarmingDesc,
-    icon: 'leaf',
-    color: COLORS.primary,
-  },
-  {
-    id: 'disease',
-    title: STRINGS.videos.cropDisease,
-    description: STRINGS.videos.cropDiseaseDesc,
-    icon: 'bug',
-    color: COLORS.error,
-  },
-  {
-    id: 'technology',
-    title: STRINGS.videos.modernTech,
-    description: STRINGS.videos.modernTechDesc,
-    icon: 'drone',
-    color: COLORS.info,
-  },
-];
+import { getSubjectsList } from '../../constants/subjects';
 
 export default function CategoryListScreen({ type, videos, onSelectItem, onBack }) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const getDataList = () => {
+  const dataList = useMemo(() => {
     if (type === 'subject') {
-      return getSubjectsList();
+      return getSubjectsList().filter((subject) =>
+        videos?.some((video) => video.subject === subject.id)
+      );
     }
 
     if (type === 'author') {
-      const authors = videos.reduce((acc, v) => {
+      const authors = (videos || []).reduce((acc, v) => {
         acc[v.author] = (acc[v.author] || 0) + 1;
         return acc;
       }, {});
@@ -74,7 +31,7 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
     }
 
     if (type === 'company') {
-      const companies = videos.reduce((acc, v) => {
+      const companies = (videos || []).reduce((acc, v) => {
         acc[v.company] = (acc[v.company] || 0) + 1;
         return acc;
       }, {});
@@ -88,19 +45,18 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
     }
 
     return [];
-  };
+  }, [type, videos]);
 
-  const getFilteredList = () => {
-    const list = getDataList();
+  const filteredList = useMemo(() => {
     const match = searchQuery.trim().toLowerCase();
-    if (!match) return list;
+    if (!match) return dataList;
 
-    return list.filter(
+    return dataList.filter(
       (item) =>
         item.title.toLowerCase().includes(match) ||
         (item.description && item.description.toLowerCase().includes(match))
     );
-  };
+  }, [dataList, searchQuery]);
 
   const handleVoiceSearch = () => {
     Alert.alert(
@@ -183,7 +139,7 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
       </View>
 
       <FlatList
-        data={getFilteredList()}
+        data={filteredList}
         keyExtractor={(item) => item.id}
         renderItem={renderCardItem}
         contentContainerStyle={styles.listContent}

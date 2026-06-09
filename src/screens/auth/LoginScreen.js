@@ -11,6 +11,7 @@ import { signInWithPhoneNumber } from 'firebase/auth';
 import { useAppStore } from '../../store/useAppStore';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import { getProfile, getProfileByPhone, saveProfile } from '../../services/profileService';
 
 export default function LoginScreen() {
   const setUser = useAppStore((state) => state.setUser);
@@ -37,6 +38,20 @@ export default function LoginScreen() {
     setPhoneVal(data.phone);
 
     try {
+      const existingProfile = await getProfileByPhone(data.phone);
+      if (existingProfile) {
+        if (existingProfile.isBlocked) {
+          Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
+          setLoading(false);
+          return;
+        }
+        if (existingProfile.isActive === false) {
+          Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
+          setLoading(false);
+          return;
+        }
+      }
+
       // Enable app verification bypass for whitelisted testing numbers in development
       firebaseAuth.settings.appVerificationDisabledForTesting = true;
 
@@ -60,7 +75,7 @@ export default function LoginScreen() {
       console.error('[KisanApp Auth] OTP request failure:', error);
       Alert.alert(
         STRINGS.common.appName,
-        'ओटीपी पाठवताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा किंवा चाचणीसाठी मॉक मोड वापरा.'
+        STRINGS.auth.otpRequestError
       );
     } finally {
       setLoading(false);
@@ -70,7 +85,7 @@ export default function LoginScreen() {
   // Verify Code Trigger
   const handleVerifyOtp = async () => {
     if (!/^[0-9]{6}$/.test(otpCode)) {
-      Alert.alert(STRINGS.common.appName, 'कृपया अचूक ६ अंकी ओटीपी कोड प्रविष्ट करा.');
+      Alert.alert(STRINGS.common.appName, STRINGS.auth.enterCorrectOtp);
       return;
     }
 
@@ -79,17 +94,64 @@ export default function LoginScreen() {
     try {
       if (confirmationResult) {
         const result = await confirmationResult.confirm(otpCode);
-        // AppNavigator's onAuthStateChanged listener automatically hydra-sets the session
-        setUser({
-          uid: result.user.uid,
-          phoneNumber: result.user.phoneNumber,
-        });
+        const uid = result.user.uid;
+
+        // Retrieve profile to check existence
+        let profile = await getProfile(uid);
+
+        if (!profile) {
+          // User does not exist, provision user document with isActive: true
+          const baseProfile = {
+            uid,
+            phone: result.user.phoneNumber ? result.user.phoneNumber.replace('+91', '') : phoneVal,
+            name: '',
+            role: '',
+            village: '',
+            taluka: '',
+            district: '',
+            pincode: '',
+            farmDetails: {
+              totalArea: '',
+              cultivatedArea: '',
+              mainCrop: '',
+            },
+            stats: {
+              animalsCount: 0,
+              dailyMilkYield: 0,
+            },
+            rating: 5.0,
+            isBlocked: false,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          // Save profile to database
+          profile = await saveProfile(uid, baseProfile);
+        } else {
+          // User exists, check active/block status
+          if (profile.isBlocked) {
+            await firebaseAuth.signOut();
+            Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
+            setLoading(false);
+            return;
+          }
+          if (profile.isActive === false) {
+            await firebaseAuth.signOut();
+            Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Set session user
+        setUser(profile);
       } else {
         throw new Error('No Firebase confirmation context found.');
       }
     } catch (error) {
       console.error('[KisanApp Auth] Verification failure:', error);
-      Alert.alert(STRINGS.common.appName, 'ओटीपी पडताळणी अयशस्वी. कृपया अचूक कोड टाका.');
+      Alert.alert(STRINGS.common.appName, STRINGS.auth.otpVerificationFailed);
     } finally {
       setLoading(false);
     }
@@ -132,7 +194,7 @@ export default function LoginScreen() {
                 render={({ field: { onChange, value } }) => (
                   <Input
                     label={STRINGS.common.phone}
-                    placeholder="उदा. ९८७६५४३२१०"
+                    placeholder="उदा. 9356289160"
                     keyboardType="numeric"
                     maxLength={10}
                     value={value}
@@ -145,7 +207,7 @@ export default function LoginScreen() {
               />
 
               <Button
-                title="ओटीपी (OTP) पाठवा"
+                title={STRINGS.auth.sendOtp}
                 onPress={handleSubmit(handleRequestOtp)}
                 style={styles.authButton}
                 disabled={loading}
@@ -156,7 +218,7 @@ export default function LoginScreen() {
             <View style={styles.formContainer}>
               <View style={styles.phoneHeaderRow}>
                 <Text style={styles.otpSentText}>
-                  नंबर: +९१ {phoneVal}
+                  {STRINGS.auth.phoneNumberLabel}: {phoneVal}
                 </Text>
                 <IconButton
                   icon="pencil"
@@ -170,8 +232,8 @@ export default function LoginScreen() {
               <Text style={styles.instructionText}>{STRINGS.auth.verifyOtp}</Text>
 
               <Input
-                label="६-अंकी ओटीपी (OTP) प्रविष्ट करा"
-                placeholder="उदा. १२३४५६"
+                label={STRINGS.auth.enterOtpLabel}
+                placeholder={STRINGS.auth.otpPlaceholder}
                 keyboardType="numeric"
                 maxLength={6}
                 value={otpCode}
@@ -187,7 +249,7 @@ export default function LoginScreen() {
               />
 
               <Button
-                title="मागे जा"
+                title={STRINGS.auth.backBtn}
                 mode="outlined"
                 onPress={handleBackToPhone}
                 style={styles.backButton}

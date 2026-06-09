@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage, isMock } from './firebase';
 
@@ -18,6 +18,55 @@ export const getProfile = async (uid) => {
   } catch (error) {
     console.error('[ProfileService] Error in getProfile:', error);
     // Return null on failure to allow offline or local mock mode to proceed gracefully
+    return null;
+  }
+};
+
+/**
+ * Query user profile by phone number.
+ * Returns the profile object if found, otherwise null.
+ */
+export const getProfileByPhone = async (phone) => {
+  if (!phone) return null;
+  // Clean phone input by removing country code and whitespace
+  const cleanPhone = phone.replace('+91', '').trim();
+
+  if (isMock) {
+    console.log('[ProfileService] Mock Firebase: Looking up profile by phone:', cleanPhone);
+    // Designate test configurations for local offline verification
+    if (cleanPhone === '9999999999') {
+      return {
+        uid: 'mock-blocked-uid',
+        phone: '9999999999',
+        name: 'Blocked Farmer',
+        isActive: true,
+        isBlocked: true,
+      };
+    }
+    if (cleanPhone === '8888888888') {
+      return {
+        uid: 'mock-inactive-uid',
+        phone: '8888888888',
+        name: 'Inactive Farmer',
+        isActive: false,
+        isBlocked: false,
+      };
+    }
+    return null;
+  }
+
+  try {
+    const colRef = collection(db, 'users');
+    const q = query(colRef, where('phone', '==', cleanPhone));
+    const querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const docSnap = querySnapshot.docs[0];
+      return { uid: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error('[ProfileService] Error in getProfileByPhone:', error);
     return null;
   }
 };

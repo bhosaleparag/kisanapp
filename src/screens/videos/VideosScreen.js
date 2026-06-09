@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { StyleSheet, View, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { FAB, Portal, Modal, IconButton, Text, ActivityIndicator } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
+import { getSubjectsList } from '../../constants/subjects';
 import { videoSchema } from '../../utils/schemas';
 import { getVideos, addVideo } from '../../services/videoService';
 import { useAppStore } from '../../store/useAppStore';
@@ -87,14 +88,13 @@ export default function VideosScreen() {
     }
   };
 
-  const subjectOptions = [
-    { value: 'breed_management', label: STRINGS.videos.breedManagement },
-    { value: 'feed_management', label: STRINGS.videos.feedManagement },
-    { value: 'manage_animal', label: STRINGS.videos.animalManagement },
-    { value: 'organic', label: STRINGS.videos.organicFarming },
-    { value: 'disease', label: STRINGS.videos.cropDisease },
-    { value: 'technology', label: STRINGS.videos.modernTech },
-  ];
+  const subjectOptions = useMemo(() =>
+    getSubjectsList().map((subject) => ({
+      value: subject.id,
+      label: subject.title,
+    })),
+    []
+  );
 
   const renderScreen = () => {
     switch (currentScreen.page) {

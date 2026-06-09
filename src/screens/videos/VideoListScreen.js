@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StyleSheet, View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,8 +8,8 @@ import { STRINGS } from '../../constants/strings';
 export default function VideoListScreen({ filter, videos, onSelectVideo, onBack }) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const getFilteredVideos = () => {
-    const matched = videos.filter((v) => {
+  const matchedVideos = useMemo(() => {
+    return (videos || []).filter((v) => {
       if (filter.type === 'subject') {
         return v.subject === filter.value;
       }
@@ -21,18 +21,20 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
       }
       return true;
     });
+  }, [videos, filter.type, filter.value]);
 
+  const filteredVideos = useMemo(() => {
     const match = searchQuery.trim().toLowerCase();
-    if (!match) return matched;
+    if (!match) return matchedVideos;
 
-    return matched.filter(
+    return matchedVideos.filter(
       (v) =>
-        v.title.toLowerCase().includes(match) ||
-        v.description.toLowerCase().includes(match) ||
-        v.author.toLowerCase().includes(match) ||
-        v.company.toLowerCase().includes(match)
+        v.title?.toLowerCase().includes(match) ||
+        v.description?.toLowerCase().includes(match) ||
+        v.author?.toLowerCase().includes(match) ||
+        v.company?.toLowerCase().includes(match)
     );
-  };
+  }, [matchedVideos, searchQuery]);
 
   const handleVoiceSearch = () => {
     Alert.alert(
@@ -113,7 +115,7 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
       <Text style={styles.sectionTitle}>{STRINGS.videos.videoListTitle}</Text>
 
       <FlatList
-        data={getFilteredVideos()}
+        data={filteredVideos}
         keyExtractor={(item) => item.id}
         renderItem={renderVideoItem}
         contentContainerStyle={styles.listContent}
