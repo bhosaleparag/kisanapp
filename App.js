@@ -3,18 +3,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { MD3LightTheme, PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
-// Theme and Navigation imports
 import { COLORS } from './src/constants/theme';
 import AppNavigator from './src/navigation/AppNavigator';
 
-// Firebase compilation & initialization check
-import { auth, db, isMock } from './src/services/firebase';
-console.log('[KisanApp Firebase] Core modules compiled and loaded successfully! Mock Mode:', isMock);
-
-
-// Create a cost-efficient React Query Client
-// Optimized specifically to minimize Firebase Firestore read charges
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

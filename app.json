@@ -6,6 +6,11 @@
     "orientation": "portrait",
     "icon": "./assets/app-logo.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/app-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D3C12"
+    },
     "ios": {
       "supportsTablet": true
     },
@@ -21,7 +26,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-video"
+      "expo-video",
+      "@react-native-firebase/app"
     ],
     "extra": {
       "eas": {

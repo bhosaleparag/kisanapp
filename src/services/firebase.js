@@ -1,60 +1,37 @@
-import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from '@react-native-firebase/auth';
+import { getFirestore } from '@react-native-firebase/firestore';
+import { getStorage } from '@react-native-firebase/storage';
 
-// Fetch credentials from Expo environment variables (prefixed with EXPO_PUBLIC_)
-const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY || 'MOCK_API_KEY',
-  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN || 'mock-app.firebaseapp.com',
-  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || 'mock-app',
-  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET || 'mock-app.appspot.com',
-  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '1234567890',
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID || '1:1234567890:web:1234567890',
-};
+// In native Firebase, initialization is done natively via google-services.json.
+// We check for mock mode based on environmental variables.
+const isMock = process.env.EXPO_PUBLIC_FIREBASE_API_KEY === 'MOCK_API_KEY' || !process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 
-// Log warning if mock credentials are being used
-const isMock = firebaseConfig.apiKey === 'MOCK_API_KEY';
 if (isMock) {
   console.warn(
-    '[KisanApp Firebase] Warning: Using placeholder Firebase credentials. ' +
-    'Please set EXPO_PUBLIC_FIREBASE_ env variables in Phase 7.'
+    '[KisanApp Firebase] Warning: Using Mock Mode because placeholder Firebase credentials are set.'
   );
 }
 
-// Initialize Firebase App
-let app;
+let authInstance = null;
+let dbInstance = null;
+let storageInstance = null;
+
 try {
-  app = initializeApp(firebaseConfig);
+  authInstance = getAuth();
 } catch (error) {
-  console.error('[KisanApp Firebase] App initialization failed:', error);
+  console.error('[KisanApp Firebase] Native Auth initialization failed:', error);
 }
 
-// Initialize Firebase Auth with React Native persistence to ensure user session survives app restarts
-let auth;
 try {
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
+  dbInstance = getFirestore();
 } catch (error) {
-  console.error('[KisanApp Firebase] Auth initialization failed:', error);
+  console.error('[KisanApp Firebase] Native Firestore initialization failed:', error);
 }
 
-// Initialize Firestore with default memory cache to prevent IndexedDB unimplemented warnings on mobile
-let db;
 try {
-  db = initializeFirestore(app, {});
+  storageInstance = getStorage();
 } catch (error) {
-  console.error('[KisanApp Firebase] Firestore initialization failed:', error);
+  console.error('[KisanApp Firebase] Native Storage initialization failed:', error);
 }
 
-// Initialize Firebase Storage
-let storage;
-try {
-  storage = getStorage(app);
-} catch (error) {
-  console.error('[KisanApp Firebase] Storage initialization failed:', error);
-}
-
-export { app, auth, db, storage, isMock };
+export { authInstance as auth, dbInstance as db, storageInstance as storage, isMock };

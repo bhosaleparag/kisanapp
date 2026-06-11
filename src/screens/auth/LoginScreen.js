@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
 import { authSchema } from '../../utils/schemas';
+import { signInWithPhoneNumber, signOut } from '@react-native-firebase/auth';
 import { auth as firebaseAuth } from '../../services/firebase';
-import { signInWithPhoneNumber } from 'firebase/auth';
 import { useAppStore } from '../../store/useAppStore';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -38,6 +38,7 @@ export default function LoginScreen() {
     setPhoneVal(data.phone);
 
     try {
+      // 1. Look up profile by phone number first
       const existingProfile = await getProfileByPhone(data.phone);
       if (existingProfile) {
         if (existingProfile.isBlocked) {
@@ -52,22 +53,10 @@ export default function LoginScreen() {
         }
       }
 
-      // Enable app verification bypass for whitelisted testing numbers in development
-      firebaseAuth.settings.appVerificationDisabledForTesting = true;
-
-      // Dummy ApplicationVerifier to satisfy Web SDK's required appVerifier parameter in React Native
-      const dummyVerifier = {
-        type: 'recaptcha',
-        verify: () => Promise.resolve(''),
-        _reset: () => { },
-      };
-
+      // Native Firebase handles device verification silently in the background
       const formattedPhone = `+91${data.phone}`;
-      const confirmation = await signInWithPhoneNumber(
-        firebaseAuth,
-        formattedPhone,
-        dummyVerifier
-      );
+      const confirmation = await signInWithPhoneNumber(firebaseAuth, formattedPhone);
+
       setConfirmationResult(confirmation);
       setOtpSent(true);
       Alert.alert(STRINGS.common.appName, STRINGS.auth.otpSent);
@@ -131,13 +120,13 @@ export default function LoginScreen() {
         } else {
           // User exists, check active/block status
           if (profile.isBlocked) {
-            await firebaseAuth.signOut();
+            await signOut(firebaseAuth);
             Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
             setLoading(false);
             return;
           }
           if (profile.isActive === false) {
-            await firebaseAuth.signOut();
+            await signOut(firebaseAuth);
             Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
             setLoading(false);
             return;
@@ -169,7 +158,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
         <View style={styles.authCard}>
           {/* Logo Card Section */}
           <View style={styles.logoWrapper}>
@@ -194,14 +183,13 @@ export default function LoginScreen() {
                 render={({ field: { onChange, value } }) => (
                   <Input
                     label={STRINGS.common.phone}
-                    placeholder="उदा. 9356289160"
+                    placeholder="उदा. 9328314295"
                     keyboardType="numeric"
                     maxLength={10}
                     value={value}
                     onChangeText={onChange}
                     error={!!errors.phone}
                     errorMessage={errors.phone?.message}
-                    left={<IconButton icon="phone" size={24} style={styles.inputIcon} />}
                   />
                 )}
               />
@@ -238,7 +226,6 @@ export default function LoginScreen() {
                 maxLength={6}
                 value={otpCode}
                 onChangeText={setOtpCode}
-                left={<IconButton icon="lock" size={24} style={styles.inputIcon} />}
               />
 
               <Button

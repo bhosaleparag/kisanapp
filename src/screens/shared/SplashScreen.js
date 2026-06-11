@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Animated, Image, StatusBar } from 'react-native';
 import { ActivityIndicator, Text } from 'react-native-paper';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
@@ -19,7 +19,7 @@ export default function SplashScreen({ authResolved, onFinish }) {
   const screenOpacity = useRef(new Animated.Value(1)).current;
 
   // Track state to trigger exit sequence once ready
-  const isReadyToExit = useRef(false);
+  const [isReadyToExit, setIsReadyToExit] = useState(false);
 
   useEffect(() => {
     // 1. Trigger Entrance Animations
@@ -60,23 +60,15 @@ export default function SplashScreen({ authResolved, onFinish }) {
 
     // 2. Minimum display timer to prevent flashing and let user experience the animations
     const minTimer = setTimeout(() => {
-      isReadyToExit.current = true;
-      checkAndExit();
+      setIsReadyToExit(true);
     }, 2200);
 
     return () => clearTimeout(minTimer);
   }, []);
 
-  // Watch authResolved updates to handle transitions
+  // Watch authResolved and isReadyToExit updates to handle transitions
   useEffect(() => {
-    if (authResolved) {
-      checkAndExit();
-    }
-  }, [authResolved]);
-
-  const checkAndExit = () => {
-    // Exit only if BOTH the minimum animation time has elapsed and the auth check is resolved
-    if (isReadyToExit.current && authResolved) {
+    if (isReadyToExit && authResolved) {
       Animated.timing(screenOpacity, {
         toValue: 0,
         duration: 450,
@@ -85,7 +77,7 @@ export default function SplashScreen({ authResolved, onFinish }) {
         onFinish();
       });
     }
-  };
+  }, [isReadyToExit, authResolved, onFinish, screenOpacity]);
 
   return (
     <Animated.View style={[styles.container, { opacity: screenOpacity }]}>

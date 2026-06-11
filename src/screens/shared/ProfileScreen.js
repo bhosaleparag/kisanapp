@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView, Alert, ActivityIndicator, Pressable, Dime
 import { Text, Card as PaperCard, SegmentedButtons, IconButton } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signOut } from 'firebase/auth';
+import { signOut } from '@react-native-firebase/auth';
 import { auth } from '../../services/firebase';
 import { useAppStore } from '../../store/useAppStore';
 import { saveProfile } from '../../services/profileService';
@@ -50,7 +50,7 @@ export default function ProfileScreen({ navigation }) {
       name: user?.name || '',
       phone: user?.phone || '',
       role: user?.role || 'seller',
-      district: user?.district || 'सोलापूर', // Lock to Solapur district for now
+      district: user?.district || STRINGS.profile.solapur, // Lock to Solapur district for now
       taluka: user?.taluka || '',
       village: user?.village || '',
       pincode: user?.pincode || '',
@@ -91,7 +91,7 @@ export default function ProfileScreen({ navigation }) {
 
       Alert.alert(
         STRINGS.common.appName,
-        `जीपीएस (GPS) उपग्रहाद्वारे अचूक स्थान प्राप्त झाले!\n\nअक्षांश (Lat): ${exactLat.toFixed(6)}\nरेखांश (Lng): ${exactLng.toFixed(6)}`
+        `${STRINGS.profile.gpsSuccessMsg}\n\n${STRINGS.profile.latitude} (Lat): ${exactLat.toFixed(6)}\n${STRINGS.profile.longitude} (Lng): ${exactLng.toFixed(6)}`
       );
     }, 1200);
   };
@@ -121,11 +121,11 @@ export default function ProfileScreen({ navigation }) {
       );
 
       setUser(updatedProfile);
-      Alert.alert(STRINGS.common.appName, 'तुमची प्रोफाईल यशस्वीरीत्या जतन केली आहे.');
+      Alert.alert(STRINGS.common.appName, STRINGS.profile.saveSuccess);
       navigation.goBack();
     } catch (error) {
       console.error('[ProfileScreen] Save profile error:', error);
-      Alert.alert(STRINGS.common.appName, 'माहिती जतन करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.');
+      Alert.alert(STRINGS.common.appName, STRINGS.profile.saveError);
     } finally {
       setLoading(false);
     }
@@ -135,11 +135,11 @@ export default function ProfileScreen({ navigation }) {
   const handleLogout = () => {
     Alert.alert(
       STRINGS.common.welcome,
-      'तुम्हाला नक्की लॉगआउट करायचे आहे का?',
+      STRINGS.profile.logoutConfirmTitle,
       [
-        { text: 'रद्द करा', style: 'cancel' },
+        { text: STRINGS.common.cancel, style: 'cancel' },
         {
-          text: 'लॉगआउट करा',
+          text: STRINGS.profile.logoutConfirmBtn,
           style: 'destructive',
           onPress: async () => {
             setLoading(true);
@@ -148,7 +148,7 @@ export default function ProfileScreen({ navigation }) {
               logout();
             } catch (err) {
               console.error('[ProfileScreen] Logout failure:', err);
-              Alert.alert(STRINGS.common.appName, 'लॉगआउट करताना त्रुटी आली.');
+              Alert.alert(STRINGS.common.appName, STRINGS.profile.logoutError);
             } finally {
               setLoading(false);
             }
@@ -168,7 +168,7 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent}>
 
         {/* Profile Pic Card */}
         <PaperCard style={styles.sectionCard} mode="elevated">
@@ -179,10 +179,10 @@ export default function ProfileScreen({ navigation }) {
 
             <View style={styles.metaRow}>
               <View style={styles.metaBadge}>
-                <Text style={styles.metaText}>⭐️ {user?.rating?.toFixed(1) || '5.0'} रेटिंग</Text>
+                <Text style={styles.metaText}>⭐️ {user?.rating?.toFixed(1) || '5.0'} {STRINGS.profile.ratingLabel}</Text>
               </View>
               <View style={[styles.metaBadge, styles.activeBadge]}>
-                <Text style={[styles.metaText, styles.activeText]}>✅ सक्रिय शेतकरी</Text>
+                <Text style={[styles.metaText, styles.activeText]}>✅ {STRINGS.profile.activeFarmer}</Text>
               </View>
             </View>
           </PaperCard.Content>
@@ -191,15 +191,15 @@ export default function ProfileScreen({ navigation }) {
         {/* Section 1: Personal Details */}
         <PaperCard style={styles.sectionCard} mode="elevated">
           <PaperCard.Content>
-            <Text style={styles.sectionTitle}>👤 वैयक्तिक माहिती</Text>
+            <Text style={styles.sectionTitle}>👤 {STRINGS.profile.personalInfo}</Text>
 
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="शेतकऱ्याचे पूर्ण नाव"
-                  placeholder="उदा. रामराव गायकवाड"
+                  label={STRINGS.profile.nameLabel}
+                  placeholder={STRINGS.profile.namePlaceholder}
                   value={value}
                   onChangeText={onChange}
                   error={!!errors.name}
@@ -214,10 +214,10 @@ export default function ProfileScreen({ navigation }) {
               render={({ field: { onChange, value } }) => (
                 <Input
                   label={STRINGS.common.phone}
-                  placeholder="उदा. ९८७६५४३२१०"
+                  placeholder={STRINGS.profile.phonePlaceholder}
                   keyboardType="numeric"
                   value={value}
-                  onChangeText={onChange}
+                  disabled={true}
                   error={!!errors.phone}
                   errorMessage={errors.phone?.message}
                 />
@@ -229,7 +229,7 @@ export default function ProfileScreen({ navigation }) {
               name="role"
               render={({ field: { onChange, value } }) => (
                 <View style={styles.segmentedContainer}>
-                  <Text style={styles.segmentedLabel}>भूमिका निवडा</Text>
+                  <Text style={styles.segmentedLabel}>{STRINGS.profile.roleLabel}</Text>
                   <SegmentedButtons
                     value={value}
                     onValueChange={onChange}
@@ -237,19 +237,19 @@ export default function ProfileScreen({ navigation }) {
                     buttons={[
                       {
                         value: 'buyer',
-                        label: 'खरेदीदार',
+                        label: STRINGS.profile.buyer,
                         checkedColor: '#FFFFFF',
                         style: value === 'buyer' ? { backgroundColor: COLORS.primary } : {},
                       },
                       {
                         value: 'seller',
-                        label: 'विक्रेता',
+                        label: STRINGS.profile.seller,
                         checkedColor: '#FFFFFF',
                         style: value === 'seller' ? { backgroundColor: COLORS.primary } : {},
                       },
                       {
                         value: 'both',
-                        label: 'दोन्ही',
+                        label: STRINGS.profile.both,
                         checkedColor: '#FFFFFF',
                         style: value === 'both' ? { backgroundColor: COLORS.primary } : {},
                       },
@@ -267,7 +267,7 @@ export default function ProfileScreen({ navigation }) {
         {/* Section 2: Solapur Address Dropdowns & Simulated Exact Map Location */}
         <PaperCard style={styles.sectionCard} mode="elevated">
           <PaperCard.Content>
-            <Text style={styles.sectionTitle}>📍 पत्ता (सोलापूर जिल्हा विशेष)</Text>
+            <Text style={styles.sectionTitle}>📍 {STRINGS.profile.addressTitle}</Text>
 
             {/* Input: Locked District Selection */}
             <Controller
@@ -275,10 +275,10 @@ export default function ProfileScreen({ navigation }) {
               name="district"
               render={({ field: { onChange, value } }) => (
                 <Select
-                  label="जिल्हा"
+                  label={STRINGS.profile.districtLabel}
                   selectedValue={value}
                   onValueChange={onChange}
-                  options={[{ value: 'सोलापूर', label: 'सोलापूर' }]}
+                  options={[{ value: 'सोलापूर', label: STRINGS.profile.solapur }]}
                   disabled={true} // Lock district selection to Solapur only
                 />
               )}
@@ -290,11 +290,11 @@ export default function ProfileScreen({ navigation }) {
               name="taluka"
               render={({ field: { onChange, value } }) => (
                 <Select
-                  label="तालुका निवडा"
+                  label={STRINGS.profile.selectTaluka}
                   selectedValue={value}
                   onValueChange={onChange}
                   options={talukaOptions}
-                  placeholder="तालुका निवडण्यासाठी येथे दाबा..."
+                  placeholder={STRINGS.profile.talukaPlaceholder}
                   error={!!errors.taluka}
                   errorMessage={errors.taluka?.message}
                 />
@@ -307,11 +307,11 @@ export default function ProfileScreen({ navigation }) {
               name="village"
               render={({ field: { onChange, value } }) => (
                 <Select
-                  label="गाव निवडा"
+                  label={STRINGS.profile.selectVillage}
                   selectedValue={value}
                   onValueChange={onChange}
                   options={villageOptions}
-                  placeholder={watchedTaluka ? "गाव निवडण्यासाठी येथे दाबा..." : "आधी तालुका निवडा..."}
+                  placeholder={watchedTaluka ? STRINGS.profile.villagePlaceholder : STRINGS.profile.selectTalukaFirst}
                   disabled={!watchedTaluka} // Disable until taluka is selected
                   error={!!errors.village}
                   errorMessage={errors.village?.message}
@@ -325,8 +325,8 @@ export default function ProfileScreen({ navigation }) {
               name="pincode"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="पिनकोड (Pincode)"
-                  placeholder="उदा. ४१३००१"
+                  label={STRINGS.profile.pincodeLabel}
+                  placeholder={STRINGS.profile.pincodePlaceholder}
                   keyboardType="numeric"
                   maxLength={6}
                   value={value}
@@ -340,7 +340,7 @@ export default function ProfileScreen({ navigation }) {
             {/* Premium Agricultural Vector Map Coordinate Selector */}
             <View style={styles.mapSection}>
               <View style={styles.mapHeaderRow}>
-                <Text style={styles.mapSectionTitle}>🚜 नकाशावरून शेतीचे ठिकाण निवडा</Text>
+                <Text style={styles.mapSectionTitle}>🚜 {STRINGS.profile.mapSelectTitle}</Text>
                 <IconButton
                   icon="crosshairs-gps"
                   size={20}
@@ -351,12 +351,12 @@ export default function ProfileScreen({ navigation }) {
                 />
               </View>
               <Text style={styles.mapSubText}>
-                नकाशात तुमच्या शेताच्या जागेवर टॅप करा. अचूक स्थान मिळवले जाईल:
+                {STRINGS.profile.mapSelectSub}
               </Text>
               {/* Coordinates display bar */}
               <View style={styles.coordsDisplayBar}>
                 <Text style={styles.coordsText}>
-                  📍 अक्षांश: <Text style={styles.coordsValue}>{locationCoords.lat.toFixed(5)}</Text> | रेखांश: <Text style={styles.coordsValue}>{locationCoords.lng.toFixed(5)}</Text>
+                  📍 {STRINGS.profile.latitude}: <Text style={styles.coordsValue}>{locationCoords.lat.toFixed(5)}</Text> | {STRINGS.profile.longitude}: <Text style={styles.coordsValue}>{locationCoords.lng.toFixed(5)}</Text>
                 </Text>
               </View>
             </View>
@@ -366,15 +366,15 @@ export default function ProfileScreen({ navigation }) {
         {/* Section 3: Farm Size details */}
         <PaperCard style={styles.sectionCard} mode="elevated">
           <PaperCard.Content>
-            <Text style={styles.sectionTitle}>🌾 शेतीचे सविस्तर तपशील</Text>
+            <Text style={styles.sectionTitle}>🌾 {STRINGS.profile.farmDetailsTitle}</Text>
 
             <Controller
               control={control}
               name="farmDetails.totalArea"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="एकूण शेत जमीन (एकर)"
-                  placeholder="उदा. १०"
+                  label={STRINGS.profile.totalAreaLabel}
+                  placeholder={STRINGS.profile.totalAreaPlaceholder}
                   keyboardType="numeric"
                   value={value}
                   onChangeText={onChange}
@@ -389,8 +389,8 @@ export default function ProfileScreen({ navigation }) {
               name="farmDetails.cultivatedArea"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="लागवडीखालील/वापरात असलेले क्षेत्र (एकर)"
-                  placeholder="उदा. ८"
+                  label={STRINGS.profile.cultivatedAreaLabel}
+                  placeholder={STRINGS.profile.cultivatedAreaPlaceholder}
                   keyboardType="numeric"
                   value={value}
                   onChangeText={onChange}
@@ -405,8 +405,8 @@ export default function ProfileScreen({ navigation }) {
               name="farmDetails.mainCrop"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label="मुख्य पिके"
-                  placeholder="उदा. ऊस, कांदा, डाळिंब"
+                  label={STRINGS.profile.mainCropLabel}
+                  placeholder={STRINGS.profile.mainCropPlaceholder}
                   value={value}
                   onChangeText={onChange}
                   error={!!errors.farmDetails?.mainCrop}
@@ -427,7 +427,7 @@ export default function ProfileScreen({ navigation }) {
 
         {/* Action Logout button */}
         <Button
-          title="लॉगआउट करा (Logout)"
+          title={STRINGS.profile.logoutBtn}
           mode="outlined"
           onPress={handleLogout}
           style={styles.logoutButton}

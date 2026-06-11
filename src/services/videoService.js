@@ -1,5 +1,5 @@
-import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, isMock } from './firebase';
+import { collection, getDocs, addDoc, serverTimestamp } from '@react-native-firebase/firestore';
 import { STRINGS } from '../constants/strings';
 
 // Static subject mapping helper to populate category titles automatically
@@ -164,8 +164,7 @@ export const getVideos = async () => {
   }
 
   try {
-    const colRef = collection(db, 'videos');
-    const querySnapshot = await getDocs(colRef);
+    const querySnapshot = await getDocs(collection(db, 'videos'));
     const videosList = [];
 
     querySnapshot.forEach((doc) => {
@@ -218,8 +217,7 @@ export const addVideo = async (videoData) => {
   }
 
   try {
-    const colRef = collection(db, 'videos');
-    const docRef = await addDoc(colRef, {
+    const docRef = await addDoc(collection(db, 'videos'), {
       ...completedVideo,
       serverCreatedAt: serverTimestamp(),
     });

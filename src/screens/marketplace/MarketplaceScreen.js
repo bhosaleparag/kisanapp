@@ -163,7 +163,7 @@ export default function MarketplaceScreen() {
           onDismiss={() => setModalVisible(false)}
           contentContainerStyle={styles.modalContainer}
         >
-          <ScrollView contentContainerStyle={styles.modalScroll}>
+          <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modalScroll}>
             {/* Modal Header */}
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{STRINGS.marketplace.postListing}</Text>

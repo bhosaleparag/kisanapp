@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from '@react-native-firebase/auth';
 import { auth } from '../services/firebase';
 import { useAppStore } from '../store/useAppStore';
 import { getProfile } from '../services/profileService';
@@ -24,63 +24,74 @@ export default function AppNavigator() {
 
   // Subscribe to Firebase Auth state updates
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      try {
-        if (firebaseUser) {
-          const profile = await getProfile(firebaseUser.uid);
-          if (profile) {
-            // Check active/block status on startup
-            if (profile.isBlocked) {
-              await auth.signOut();
-              setUser(null);
-              Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
-              return;
-            }
-            if (profile.isActive === false) {
-              await auth.signOut();
-              setUser(null);
-              Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
-              return;
-            }
-            setUser(profile);
-          } else {
-            setUser({
-              uid: firebaseUser.uid,
-              phone: firebaseUser.phoneNumber ? firebaseUser.phoneNumber.replace('+91', '') : '',
-              name: '',
-              role: '',
-              village: '',
-              taluka: '',
-              district: '',
-              pincode: '',
-              farmDetails: {
-                totalArea: '',
-                cultivatedArea: '',
-                mainCrop: '',
-              },
-              stats: {
-                animalsCount: 0,
-                dailyMilkYield: 0,
-              },
-              rating: 5.0,
-              isBlocked: false,
-              isActive: true,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('[KisanApp AppNavigator] Failed to resolve auth or profile:', error);
-        setUser(null);
-      } finally {
-        setAuthResolved(true);
-      }
-    });
+    if (!auth) {
+      console.warn('[KisanApp AppNavigator] Firebase Auth is not initialized. Bypassing state checks.');
+      setAuthResolved(true);
+      return;
+    }
 
-    return unsubscribe;
+    try {
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        try {
+          if (firebaseUser) {
+            const profile = await getProfile(firebaseUser.uid);
+            if (profile) {
+              // Check active/block status on startup
+              if (profile.isBlocked) {
+                await signOut(auth);
+                setUser(null);
+                Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
+                return;
+              }
+              if (profile.isActive === false) {
+                await signOut(auth);
+                setUser(null);
+                Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
+                return;
+              }
+              setUser(profile);
+            } else {
+              // Profile document doesn't exist, set base profile to trigger warning banner
+              setUser({
+                uid: firebaseUser.uid,
+                phone: firebaseUser.phoneNumber ? firebaseUser.phoneNumber.replace('+91', '') : '',
+                name: '',
+                role: '',
+                village: '',
+                taluka: '',
+                district: '',
+                pincode: '',
+                farmDetails: {
+                  totalArea: '',
+                  cultivatedArea: '',
+                  mainCrop: '',
+                },
+                stats: {
+                  animalsCount: 0,
+                  dailyMilkYield: 0,
+                },
+                rating: 5.0,
+                isBlocked: false,
+                isActive: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              });
+            }
+          } else {
+            setUser(null);
+          }
+        } catch (error) {
+          console.error('[KisanApp AppNavigator] Failed to resolve auth or profile:', error);
+          setUser(null);
+        } finally {
+          setAuthResolved(true);
+        }
+      });
+      return unsubscribe;
+    } catch (error) {
+      console.error('[KisanApp AppNavigator] Failed to subscribe to auth state updates:', error);
+      setAuthResolved(true);
+    }
   }, [setUser]);
 
   const isLoggedIn = !!user;

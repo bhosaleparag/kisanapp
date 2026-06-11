@@ -1,5 +1,6 @@
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { Platform } from 'react-native';
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from '@react-native-firebase/firestore';
+import { ref, putFile, getDownloadURL } from '@react-native-firebase/storage';
 import { db, storage, isMock } from './firebase';
 
 /**
@@ -56,10 +57,10 @@ export const getProfileByPhone = async (phone) => {
   }
 
   try {
-    const colRef = collection(db, 'users');
-    const q = query(colRef, where('phone', '==', cleanPhone));
+    const usersCollection = collection(db, 'users');
+    const q = query(usersCollection, where('phone', '==', cleanPhone));
     const querySnapshot = await getDocs(q);
-    
+
     if (!querySnapshot.empty) {
       const docSnap = querySnapshot.docs[0];
       return { uid: docSnap.id, ...docSnap.data() };
@@ -113,17 +114,18 @@ export const saveProfile = async (uid, profileData, localImageUri) => {
  */
 export const uploadProfileImage = async (uid, localUri) => {
   if (!localUri) return '';
-  
+
   if (isMock) {
     console.log('[ProfileService] Mock Firebase: Using local image URI for profile picture');
     return localUri;
   }
 
   try {
-    const response = await fetch(localUri);
-    const blob = await response.blob();
+    // In native storage, we can upload using putFile directly with the local file path!
+    // Since React Native localUri could be prefixed with file://, let's normalize it.
+    const fileUri = Platform.OS === 'ios' ? localUri.replace('file://', '') : localUri;
     const storageRef = ref(storage, `profiles/${uid}.jpg`);
-    await uploadBytes(storageRef, blob);
+    await putFile(storageRef, fileUri);
     const downloadUrl = await getDownloadURL(storageRef);
     return downloadUrl;
   } catch (error) {

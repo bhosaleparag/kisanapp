@@ -4,9 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { IconButton } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { signOut } from 'firebase/auth';
-import { auth } from '../services/firebase';
-import { useAppStore } from '../store/useAppStore';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/theme';
 import { STRINGS } from '../constants/strings';
 // import HomeScreen from '../screens/shared/HomeScreen';
@@ -19,8 +16,6 @@ const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
   const insets = useSafeAreaInsets();
-  const logout = useAppStore((state) => state.logout);
-  const user = useAppStore((state) => state.user);
 
   return (
     <Tab.Navigator

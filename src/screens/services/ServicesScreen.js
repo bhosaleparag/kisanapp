@@ -116,7 +116,7 @@ export default function ServicesScreen() {
           contentContainerStyle={styles.modalContainer}
         >
           {selectedService && (
-            <ScrollView contentContainerStyle={styles.modalScroll}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.modalScroll}>
               {/* Modal Header */}
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{selectedService.title} - बुकिंग</Text>
