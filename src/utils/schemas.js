@@ -91,7 +91,7 @@ export const videoSchema = z.object({
     .string()
     .min(2, { message: 'मार्गदर्शकाचे नाव आवश्यक आहे.' }),
   subject: z.string().min(1, { message: 'कृपया वैध विषय निवडा.' }).refine(
-    (val) => ['organic', 'disease', 'technology', 'breed_management', 'feed_management', 'manage_animal'].includes(val),
+    (val) => ['semen_info', 'wws_semen', 'abs_semen', 'denmark_semen'].includes(val),
     { message: 'कृपया वैध विषय निवडा.' }
   ),
   company: z

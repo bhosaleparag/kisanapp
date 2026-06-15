@@ -73,8 +73,8 @@ export const STRINGS = {
     subtitle: "शेती व गोठा व्यवस्थापनासाठी तज्ञांचे मोफत मार्गदर्शन",
     selectInfoType: "माहितीचा प्रकार निवडा",
     subjects: "विषय (Subjects)",
-    subjectsSubtitle: "6 प्रमुख विषय व विभाग",
-    subjectsDesc: "पैदावर सुधारणा, सकस चारा नियोजन, पशु आरोग्य आणि सेंद्रिय शेती संबंधित मार्गदर्शन.",
+    subjectsSubtitle: "4 प्रमुख विषय व विभाग",
+    subjectsDesc: "कृत्रिम रेतन, WWS, ABS आणि डेन्मार्क सीमेन संबंधित सविस्तर मार्गदर्शन.",
 
     experts: "मार्गदर्शक (Guides & Experts)",
     expertsSubtitle: "तज्ञ व अनुभवी वैज्ञानिक",
@@ -122,6 +122,15 @@ export const STRINGS = {
     organicFarmingDesc: "विषमुक्त शेती, कंपोस्ट खत आणि सेंद्रिय औषध फवारणी",
     cropDiseaseDesc: "पिकांवरील रोग नियंत्रण आणि जैविक कीटकनाशके",
     modernTechDesc: "ड्रोन फवारणी, आधुनिक यंत्रे आणि स्मार्ट शेती पद्धती",
+
+    semenInfo: "सीमेन माहिती",
+    semenInfoDesc: "कृत्रिम रेतन आणि दर्जेदार सीमेन संबंधी संपूर्ण माहिती",
+    wwsSemen: "WWS सीमेन",
+    wwsSemenDesc: "WWS (World Wide Sires) सीमेन द्वारे पैदावर व वंश सुधारणा",
+    absSemen: "ABS सीमेन",
+    absSemenDesc: "ABS सीमेन तंत्रज्ञान आणि जनावरांची दूध उत्पादकता वाढ",
+    denmarkSemen: "DENMARK सीमेन",
+    denmarkSemenDesc: "डेन्मार्क सीमेनचे उपयोग आणि संकरित पैदावर नियोजन",
 
     // Add Video Form strings
     saveSuccess: "व्हिडिओ यशस्वीरीत्या जतन केला आहे.",

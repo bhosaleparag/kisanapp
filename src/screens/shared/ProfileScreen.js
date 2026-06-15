@@ -49,7 +49,7 @@ export default function ProfileScreen({ navigation }) {
     defaultValues: {
       name: user?.name || '',
       phone: user?.phone || '',
-      role: user?.role || 'seller',
+      role: user?.role || 'farmer',
       district: user?.district || STRINGS.profile.solapur, // Lock to Solapur district for now
       taluka: user?.taluka || '',
       village: user?.village || '',
@@ -224,7 +224,7 @@ export default function ProfileScreen({ navigation }) {
               )}
             />
 
-            <Controller
+            {/* <Controller
               control={control}
               name="role"
               render={({ field: { onChange, value } }) => (
@@ -260,7 +260,7 @@ export default function ProfileScreen({ navigation }) {
                   )}
                 </View>
               )}
-            />
+            /> */}
           </PaperCard.Content>
         </PaperCard>
 

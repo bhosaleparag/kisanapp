@@ -8,12 +8,10 @@ import VideoPlayer from '../../components/VideoPlayer';
 
 export default function VideoPlayerPage({ selectedVideo, onBack }) {
   const SUBJECT_MAPPING = {
-    breed_management: STRINGS.videos.breedManagement,
-    feed_management: STRINGS.videos.feedManagement,
-    manage_animal: STRINGS.videos.animalManagement,
-    organic: STRINGS.videos.organicFarming,
-    disease: STRINGS.videos.cropDisease,
-    technology: STRINGS.videos.modernTech,
+    semen_info: STRINGS.videos.semenInfo,
+    wws_semen: STRINGS.videos.wwsSemen,
+    abs_semen: STRINGS.videos.absSemen,
+    denmark_semen: STRINGS.videos.denmarkSemen,
   };
 
   const displaySubject = SUBJECT_MAPPING[selectedVideo.subject] || selectedVideo.subject;

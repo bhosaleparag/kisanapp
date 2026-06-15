@@ -94,7 +94,7 @@ export default function LoginScreen() {
             uid,
             phone: result.user.phoneNumber ? result.user.phoneNumber.replace('+91', '') : phoneVal,
             name: '',
-            role: '',
+            role: 'farmer',
             village: '',
             taluka: '',
             district: '',
