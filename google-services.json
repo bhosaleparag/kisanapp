@@ -12,7 +12,20 @@
           "package_name": "com.bhosaleparag.linearagriculture"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "107787654125-v2dt5hj83aqs48mfronnrn98tm804d91.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bhosaleparag.linearagriculture",
+            "certificate_hash": "a5441608648c26c230165fd4409e4128587c27cf"
+          }
+        },
+        {
+          "client_id": "107787654125-b06a7vlm92q4dujlvgbo2lraehkblrop.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAEMUwVQbriGz39pMd5gza-Jr8MhqdJ1PM"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107787654125-b06a7vlm92q4dujlvgbo2lraehkblrop.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { onAuthStateChanged, signOut } from '@react-native-firebase/auth';
+import { onAuthStateChanged } from '@react-native-firebase/auth';
 import { auth } from '../services/firebase';
+import { signOutUser } from '../services/authService';
 import { useAppStore } from '../store/useAppStore';
 import { getProfile } from '../services/profileService';
 import { STRINGS } from '../constants/strings';
@@ -38,13 +39,13 @@ export default function AppNavigator() {
             if (profile) {
               // Check active/block status on startup
               if (profile.isBlocked) {
-                await signOut(auth);
+                await signOutUser();
                 setUser(null);
                 Alert.alert(STRINGS.common.appName, STRINGS.auth.userBlocked);
                 return;
               }
               if (profile.isActive === false) {
-                await signOut(auth);
+                await signOutUser();
                 setUser(null);
                 Alert.alert(STRINGS.common.appName, STRINGS.auth.userInactive);
                 return;

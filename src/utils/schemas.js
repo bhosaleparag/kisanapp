@@ -14,6 +14,18 @@ export const authSchema = z.object({
     .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
 });
 
+// 1b. Onboarding Walkthrough Schema (Name & Mobile Number)
+export const onboardingSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: 'नाव किमान २ अक्षरी असावे.' })
+    .max(50, { message: 'नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  phone: z
+    .string()
+    .min(1, { message: 'मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
+});
+
 // 2. Cowshed livestock registration Schema
 export const cowshedSchema = z.object({
   cowName: z

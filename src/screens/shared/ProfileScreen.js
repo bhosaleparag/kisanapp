@@ -3,8 +3,7 @@ import { StyleSheet, View, ScrollView, Alert, ActivityIndicator, Pressable, Dime
 import { Text, Card as PaperCard, SegmentedButtons, IconButton } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signOut } from '@react-native-firebase/auth';
-import { auth } from '../../services/firebase';
+import { signOutUser } from '../../services/authService';
 import { useAppStore } from '../../store/useAppStore';
 import { saveProfile } from '../../services/profileService';
 import { profileSchema } from '../../utils/schemas';
@@ -144,7 +143,7 @@ export default function ProfileScreen({ navigation }) {
           onPress: async () => {
             setLoading(true);
             try {
-              await signOut(auth);
+              await signOutUser();
               logout();
             } catch (err) {
               console.error('[ProfileScreen] Logout failure:', err);
