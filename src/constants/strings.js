@@ -148,7 +148,9 @@ export const STRINGS = {
     formDurationLabel: "कालावधी (Duration)",
     formDurationPlaceholder: "उदा. 05:20",
     formDescriptionLabel: "व्हिडिओचे सविस्तर वर्णन (Description)",
-    formDescriptionPlaceholder: "व्हिडिओबद्दल माहिती लिहा..."
+    formDescriptionPlaceholder: "व्हिडिओबद्दल माहिती लिहा...",
+    loadingYoutubeMetadata: "यूट्यूब व्हिडिओची माहिती मिळवत आहे...",
+    youtubeFetchError: "यूट्यूब व्हिडिओची माहिती मिळू शकली नाही. कृपया मॅन्युअली माहिती भरा."
   },
   auth: {
     login: "लॉगिन करा",

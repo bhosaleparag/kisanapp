@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, FlatList, Image, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
@@ -35,25 +35,6 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
         v.company?.toLowerCase().includes(match)
     );
   }, [matchedVideos, searchQuery]);
-
-  const handleVoiceSearch = () => {
-    Alert.alert(
-      STRINGS.videos.voiceSearchTitle,
-      STRINGS.videos.voiceSearchSpeakVideo,
-      [
-        { text: STRINGS.videos.voiceSearchCancel, style: 'cancel' },
-        {
-          text: STRINGS.videos.voiceSearchOk,
-          onPress: () => {
-            Alert.alert(
-              STRINGS.videos.voiceSearchResultTitle,
-              STRINGS.videos.voiceSearchNoMatch
-            );
-          },
-        },
-      ]
-    );
-  };
 
   const renderVideoItem = ({ item }) => (
     <TouchableOpacity
@@ -107,9 +88,6 @@ export default function VideoListScreen({ filter, videos, onSelectVideo, onBack 
           style={styles.searchbar}
           inputStyle={styles.searchbarInput}
         />
-        <TouchableOpacity onPress={handleVoiceSearch} style={styles.micButton}>
-          <MaterialCommunityIcons name="microphone" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
       </View>
 
       <Text style={styles.sectionTitle}>{STRINGS.videos.videoListTitle}</Text>
@@ -179,16 +157,6 @@ const styles = StyleSheet.create({
   searchbarInput: {
     fontSize: 14,
     minHeight: 0,
-  },
-  micButton: {
-    width: 44,
-    height: 44,
-    borderRadius: SIZES.radiusSm,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: SPACING.sm,
-    elevation: 1,
   },
   sectionTitle: {
     fontSize: 14,

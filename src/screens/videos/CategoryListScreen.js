@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { StyleSheet, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, TouchableOpacity } from 'react-native';
 import { Text, Searchbar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
@@ -58,28 +58,6 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
     );
   }, [dataList, searchQuery]);
 
-  const handleVoiceSearch = () => {
-    Alert.alert(
-      STRINGS.videos.voiceSearchTitle,
-      STRINGS.videos.voiceSearchActive,
-      [
-        {
-          text: STRINGS.videos.voiceSearchCancel,
-          style: 'cancel',
-        },
-        {
-          text: STRINGS.videos.voiceSearchOk,
-          onPress: () => {
-            Alert.alert(
-              STRINGS.videos.voiceSearchResultTitle,
-              STRINGS.videos.voiceSearchNoMatch
-            );
-          },
-        },
-      ]
-    );
-  };
-
   const getScreenTitle = () => {
     switch (type) {
       case 'subject':
@@ -133,9 +111,6 @@ export default function CategoryListScreen({ type, videos, onSelectItem, onBack 
           style={styles.searchbar}
           inputStyle={styles.searchbarInput}
         />
-        <TouchableOpacity onPress={handleVoiceSearch} style={styles.micButton}>
-          <MaterialCommunityIcons name="microphone" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -201,16 +176,6 @@ const styles = StyleSheet.create({
   searchbarInput: {
     fontSize: 14,
     minHeight: 0,
-  },
-  micButton: {
-    width: 44,
-    height: 44,
-    borderRadius: SIZES.radiusSm,
-    backgroundColor: COLORS.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: SPACING.sm,
-    elevation: 1,
   },
   listContent: {
     padding: SPACING.md,
