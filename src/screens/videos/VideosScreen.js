@@ -18,7 +18,7 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 
-export default function VideosScreen() {
+export default function VideosScreen({ route, navigation }) {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([{ page: 'dashboard', params: {} }]);
@@ -43,6 +43,30 @@ export default function VideosScreen() {
   useEffect(() => {
     fetchVideosList();
   }, []);
+
+  // Listen to incoming route parameters (e.g. redirected from BullInfo Screen)
+  useEffect(() => {
+    if (route?.params?.category) {
+      const cat = route.params.category;
+      const title = getSubjectsList().find((s) => s.id === cat)?.title || STRINGS.videos.semenInfo;
+      
+      setHistory([
+        { page: 'dashboard', params: {} },
+        { page: 'category_list', params: { type: 'subject' } },
+        {
+          page: 'video_list',
+          params: {
+            type: 'subject',
+            value: cat,
+            title: title,
+          },
+        },
+      ]);
+
+      // Clear the params to avoid re-triggering on subsequent navigation focus
+      navigation.setParams({ category: undefined });
+    }
+  }, [route?.params?.category, navigation]);
 
   const {
     control,
