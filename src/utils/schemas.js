@@ -175,3 +175,79 @@ export const profileSchema = z.object({
     path: ['cultivatedArea'],
   }),
 });
+
+// 6. Semen Brand Form Validation Schema
+export const semenBrandSchema = z.object({
+  brandName: z
+    .string()
+    .min(1, { message: 'ब्रँडचे नाव आवश्यक आहे.' })
+    .min(2, { message: 'नाव किमान २ अक्षरी असावे.' })
+    .max(50, { message: 'नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
+  logoUrl: z
+    .string()
+    .url({ message: 'कृपया वैध इमेज URL प्रविष्ट करा.' })
+    .or(z.literal(''))
+    .optional(),
+  isActive: z.boolean().default(true),
+});
+
+// 7. Bull Record Validation Schema
+export const bullRecordSchema = z.object({
+  bullName: z
+    .string()
+    .min(1, { message: 'वळूचे नाव आवश्यक आहे.' })
+    .min(2, { message: 'नाव किमान २ अक्षरी असावे.' })
+    .max(80, { message: 'नाव ८० अक्षरांपेक्षा जास्त नसावे.' }),
+  naabCode: z
+    .string()
+    .min(1, { message: 'NAAB कोड आवश्यक आहे.' })
+    .min(5, { message: 'NAAB कोड किमान ५ अक्षरी असावे.' })
+    .max(20, { message: 'NAAB कोड २० अक्षरांपेक्षा जास्त नसावा.' }),
+  registrationNumber: z
+    .string()
+    .min(1, { message: 'नोंदणी क्रमांक आवश्यक आहे.' }),
+  tpi: z.string().optional(),
+  breed: z
+    .string()
+    .min(1, { message: 'जनावराची जात आवश्यक आहे.' }),
+  photoUrl: z
+    .string()
+    .url({ message: 'कृपया वैध इमेज URL प्रविष्ट करा.' })
+    .or(z.literal(''))
+    .optional(),
+  photoUrls: z.array(z.string()).optional(),
+  
+  // Pedigree
+  sire: z.string().optional(),
+  damSire: z.string().optional(),
+  mgs: z.string().optional(),
+  mgd: z.string().optional(),
+  mggs: z.string().optional(),
+  
+  // Evaluation Date
+  evaluationDate: z.string().optional(),
+
+  // CDCB Chart Metrics
+  milkLbs: z.string().optional(),
+  fatLbs: z.string().optional(),
+  fatPercent: z.string().optional(),
+  proteinLbs: z.string().optional(),
+  proteinPercent: z.string().optional(),
+  reliability: z.string().optional(),
+  
+  productiveLife: z.string().optional(),
+  daughterPregnancyRate: z.string().optional(),
+  heiferConceptionRate: z.string().optional(),
+  cowConceptionRate: z.string().optional(),
+  betaCasein: z.string().optional(),
+  somaticCellScore: z.string().optional(),
+  sireCalvingEase: z.string().optional(),
+  daughterCalvingEase: z.string().optional(),
+  sireStillbirth: z.string().optional(),
+  daughterStillbirth: z.string().optional(),
+  
+  ptat: z.string().optional(),
+  udderComposite: z.string().optional(),
+  feetLegsComposite: z.string().optional(),
+  bodyWeightComposite: z.string().optional(),
+});

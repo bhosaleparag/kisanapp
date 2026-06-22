@@ -1,16 +1,14 @@
 import React from 'react';
-import { Image, Alert } from 'react-native';
+import { Image } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { IconButton } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/theme';
 import { STRINGS } from '../constants/strings';
-// import HomeScreen from '../screens/shared/HomeScreen';
-// import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
-// import ServicesScreen from '../screens/services/ServicesScreen';
+import HomeScreen from '../screens/shared/HomeScreen';
 import VideosScreen from '../screens/videos/VideosScreen';
-// import CowshedScreen from '../screens/cowshed/CowshedScreen';
+import BullInfoNavigator from './BullInfoNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,17 +25,11 @@ export default function TabNavigator() {
             case 'Home':
               iconName = 'home';
               break;
-            case 'Marketplace':
-              iconName = 'storefront';
-              break;
-            case 'Services':
-              iconName = 'tractor';
-              break;
             case 'Videos':
               iconName = 'play-box';
               break;
-            case 'Cowshed':
-              iconName = 'cow';
+            case 'BullInfo':
+              iconName = 'dna';
               break;
             default:
               iconName = 'help-circle';
@@ -48,7 +40,6 @@ export default function TabNavigator() {
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
         tabBarStyle: {
-          display: 'none', // Hide bottom tab bar as we only have the video section
           height: 60 + insets.bottom,
           paddingBottom: insets.bottom > 0 ? insets.bottom : SPACING.sm,
           paddingTop: SPACING.xs,
@@ -95,7 +86,7 @@ export default function TabNavigator() {
         ),
       })}
     >
-      {/*
+
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -103,21 +94,7 @@ export default function TabNavigator() {
           title: STRINGS.nav.home,
         }}
       />
-      <Tab.Screen
-        name="Marketplace"
-        component={MarketplaceScreen}
-        options={{
-          title: STRINGS.nav.marketplace,
-        }}
-      />
-      <Tab.Screen
-        name="Services"
-        component={ServicesScreen}
-        options={{
-          title: STRINGS.nav.services,
-        }}
-      />
-      */}
+      
       <Tab.Screen
         name="Videos"
         component={VideosScreen}
@@ -125,15 +102,14 @@ export default function TabNavigator() {
           title: STRINGS.nav.videos,
         }}
       />
-      {/*
+
       <Tab.Screen
-        name="Cowshed"
-        component={CowshedScreen}
+        name="BullInfo"
+        component={BullInfoNavigator}
         options={{
-          title: STRINGS.nav.cowshed,
+          title: STRINGS.nav.bullInfo,
         }}
       />
-      */}
     </Tab.Navigator>
   );
 }

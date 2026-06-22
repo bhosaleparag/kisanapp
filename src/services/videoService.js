@@ -147,3 +147,55 @@ export const addVideo = async (videoData) => {
     throw error;
   }
 };
+
+/**
+ * Fetch YouTube video details (title, description, duration) using the video URL.
+ * Scrapes the public watch page to parse the ytInitialPlayerResponse JSON payload.
+ */
+export const fetchYoutubeMetadata = async (url) => {
+  const videoId = getYoutubeVideoId(url);
+  if (!videoId) return null;
+
+  try {
+    const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const response = await fetch(watchUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36',
+      },
+    });
+    const html = await response.text();
+
+    // Look for ytInitialPlayerResponse variable in the HTML script tags
+    let match = html.match(/ytInitialPlayerResponse\s*=\s*({.+?});/);
+    if (!match) {
+      match = html.match(/ytInitialPlayerResponse\s*=\s*({.+?})[;,\n<]/);
+    }
+    if (!match) return null;
+
+    const data = JSON.parse(match[1]);
+    const details = data.videoDetails;
+    if (!details) return null;
+
+    const title = details.title || '';
+    const description = details.shortDescription || details.description || '';
+    const lengthSeconds = parseInt(details.lengthSeconds || '0', 10);
+    let duration = '';
+
+    if (lengthSeconds > 0) {
+      const minutes = Math.floor(lengthSeconds / 60);
+      const seconds = lengthSeconds % 60;
+      const pad = (n) => (n < 10 ? '0' + n : n);
+      duration = `${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    return {
+      title,
+      description,
+      duration,
+    };
+  } catch (error) {
+    console.error('[VideoService] Error fetching YouTube metadata:', error);
+    return null;
+  }
+};
+

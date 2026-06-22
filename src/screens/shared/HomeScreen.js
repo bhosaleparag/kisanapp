@@ -30,7 +30,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        
+
         {/* Personalized Welcome Header Banner */}
         <View style={styles.header}>
           <View style={styles.headerTextContainer}>
@@ -39,14 +39,6 @@ export default function HomeScreen({ navigation }) {
             </Text>
             <Text style={styles.appNameText}>{STRINGS.common.appName} मध्ये आपले स्वागत आहे</Text>
           </View>
-          <Avatar.Image
-            size={54}
-            source={
-              user?.profileImage
-                ? { uri: user.profileImage }
-                : { uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' }
-            }
-          />
         </View>
 
         {/* Warning Banner: Complete Profile */}
@@ -55,13 +47,13 @@ export default function HomeScreen({ navigation }) {
             <PaperCard.Content>
               <View style={styles.warningHeaderRow}>
                 <Text style={styles.warningEmoji}>⚠️</Text>
-                <Text style={styles.warningTitle}>प्रोफाईल अपूर्ण आहे!</Text>
+                <Text style={styles.warningTitle}>{STRINGS.home.warningTitle}</Text>
               </View>
               <Text style={styles.warningBody}>
-                सर्व शेतकरी सेवांचा आणि बाजारपेठेचा लाभ घेण्यासाठी कृपया तुमची सविस्तर माहिती पूर्ण भरा.
+                {STRINGS.home.warningBody}
               </Text>
               <Button
-                title="माहिती भरा (Complete Profile)"
+                title={STRINGS.home.warningBtn}
                 onPress={() => navigation.navigate('Profile')}
                 style={styles.warningBtn}
               />
@@ -69,67 +61,39 @@ export default function HomeScreen({ navigation }) {
           </PaperCard>
         )}
 
-        {/* Cowshed Quick Stats Summary Card */}
-        <PaperCard style={styles.statsCard} mode="elevated">
-          <PaperCard.Content>
-            <Text style={styles.statsCardTitle}>📊 माझा गोठा सारांश</Text>
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>एकूण जनावरे</Text>
-                <Text style={styles.statNumber}>५</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>दैनिक दूध उत्पादन</Text>
-                <Text style={styles.statNumber}>३० लिटर</Text>
-              </View>
-            </View>
-          </PaperCard.Content>
-        </PaperCard>
-
         {/* Module Section title */}
-        <Text style={styles.sectionTitle}>झटपट पर्याय</Text>
+        <Text style={styles.sectionTitle}>{STRINGS.home.quickTitle}</Text>
 
         {/* Quick Navigate Cards Grid */}
         <View style={styles.quickLinksGrid}>
-          {/* Marketplace shortcut */}
-          <Card
-            title={STRINGS.nav.marketplace}
-            subtitle="खरेदी व विक्री"
-            onPress={() => navigateToTab('Marketplace')}
-            style={styles.gridCard}
-          >
-            <Text style={styles.cardInfo}>जनावरे, चारा, आणि खते खरेदी किंवा विक्री करण्यासाठी येथे जा.</Text>
-          </Card>
-
-          {/* Services shortcut */}
-          <Card
-            title={STRINGS.nav.services}
-            subtitle="ट्रॅक्टर व अवजारे"
-            onPress={() => navigateToTab('Services')}
-            style={styles.gridCard}
-          >
-            <Text style={styles.cardInfo}>ट्रॅक्टर भाड्याने, ड्रोन फवारणी किंवा शेतमजूर बुक करण्यासाठी येथे जा.</Text>
-          </Card>
-
-          {/* Cowshed shortcut */}
-          <Card
-            title={STRINGS.nav.cowshed}
-            subtitle="दूध आणि वजन नोंद"
-            onPress={() => navigateToTab('Cowshed')}
-            style={styles.gridCard}
-          >
-            <Text style={styles.cardInfo}>तुमच्या गोठ्यातील जनावरांची आणि दुधाची दररोज नोंद ठेवा.</Text>
-          </Card>
-
           {/* Videos shortcut */}
           <Card
             title={STRINGS.nav.videos}
-            subtitle="शेती मार्गदर्शन"
+            subtitle={STRINGS.home.videoSubtitle}
             onPress={() => navigateToTab('Videos')}
             style={styles.gridCard}
           >
-            <Text style={styles.cardInfo}>सेंद्रिय शेती आणि नवीन तंत्रज्ञानाचे व्हिडिओ तज्ञांकडून पहा.</Text>
+            <Text style={styles.cardInfo}>{STRINGS.home.videoDesc}</Text>
+          </Card>
+
+          {/* Bull Info shortcut */}
+          <Card
+            title={STRINGS.nav.bullInfo}
+            subtitle={STRINGS.home.bullSubtitle}
+            onPress={() => navigateToTab('BullInfo')}
+            style={styles.gridCard}
+          >
+            <Text style={styles.cardInfo}>{STRINGS.home.bullDesc}</Text>
+          </Card>
+
+          {/* Profile shortcut */}
+          <Card
+            title={STRINGS.home.profileTitle}
+            subtitle={STRINGS.home.profileSubtitle}
+            onPress={() => navigation.navigate('Profile')}
+            style={styles.gridCard}
+          >
+            <Text style={styles.cardInfo}>{STRINGS.home.profileDesc}</Text>
           </Card>
         </View>
       </ScrollView>

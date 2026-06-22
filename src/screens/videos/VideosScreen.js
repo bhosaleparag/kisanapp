@@ -8,7 +8,7 @@ import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
 import { getSubjectsList } from '../../constants/subjects';
 import { videoSchema } from '../../utils/schemas';
-import { getVideos, addVideo } from '../../services/videoService';
+import { getVideos, addVideo, fetchYoutubeMetadata } from '../../services/videoService';
 import { useAppStore } from '../../store/useAppStore';
 import VideosDashboard from './VideosDashboard';
 import CategoryListScreen from './CategoryListScreen';
@@ -18,11 +18,13 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 
-export default function VideosScreen() {
+export default function VideosScreen({ route, navigation }) {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([{ page: 'dashboard', params: {} }]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [fetchingMetadata, setFetchingMetadata] = useState(false);
+  const [lastFetchedId, setLastFetchedId] = useState('');
   const insets = useSafeAreaInsets();
 
   const user = useAppStore((state) => state.user);
@@ -42,10 +44,36 @@ export default function VideosScreen() {
     fetchVideosList();
   }, []);
 
+  // Listen to incoming route parameters (e.g. redirected from BullInfo Screen)
+  useEffect(() => {
+    if (route?.params?.category) {
+      const cat = route.params.category;
+      const title = getSubjectsList().find((s) => s.id === cat)?.title || STRINGS.videos.semenInfo;
+      
+      setHistory([
+        { page: 'dashboard', params: {} },
+        { page: 'category_list', params: { type: 'subject' } },
+        {
+          page: 'video_list',
+          params: {
+            type: 'subject',
+            value: cat,
+            title: title,
+          },
+        },
+      ]);
+
+      // Clear the params to avoid re-triggering on subsequent navigation focus
+      navigation.setParams({ category: undefined });
+    }
+  }, [route?.params?.category, navigation]);
+
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
+    trigger,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(videoSchema),
@@ -61,12 +89,47 @@ export default function VideosScreen() {
     },
   });
 
+  const handleUrlChange = async (url) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[2].length === 11 ? match[2] : null;
+
+    if (!videoId || videoId === lastFetchedId) {
+      return;
+    }
+
+    try {
+      setFetchingMetadata(true);
+      setLastFetchedId(videoId);
+      const metadata = await fetchYoutubeMetadata(url);
+      if (metadata) {
+        if (metadata.title) {
+          setValue('title', metadata.title);
+          trigger('title');
+        }
+        if (metadata.description) {
+          setValue('description', metadata.description);
+          trigger('description');
+        }
+        if (metadata.duration) {
+          setValue('duration', metadata.duration);
+          trigger('duration');
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to auto-populate YouTube fields', err);
+    } finally {
+      setFetchingMetadata(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       setLoading(true);
       await addVideo(data);
       setModalVisible(false);
       reset();
+      setLastFetchedId('');
       // Reload list
       const updated = await getVideos();
       setVideos(updated);
@@ -182,6 +245,7 @@ export default function VideosScreen() {
           onDismiss={() => {
             setModalVisible(false);
             reset();
+            setLastFetchedId('');
           }}
           contentContainerStyle={styles.modalContainer}
         >
@@ -201,9 +265,35 @@ export default function VideosScreen() {
                   onPress={() => {
                     setModalVisible(false);
                     reset();
+                    setLastFetchedId('');
                   }}
                 />
               </View>
+
+              <Controller
+                control={control}
+                name="videoUrl"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    label={STRINGS.videos.formVideoUrlLabel}
+                    placeholder={STRINGS.videos.formVideoUrlPlaceholder}
+                    value={value}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      handleUrlChange(text);
+                    }}
+                    error={!!errors.videoUrl}
+                    errorMessage={errors.videoUrl?.message}
+                  />
+                )}
+              />
+
+              {fetchingMetadata && (
+                <View style={styles.loaderContainer}>
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                  <Text style={styles.loaderText}>{STRINGS.videos.loadingYoutubeMetadata}</Text>
+                </View>
+              )}
 
               <Controller
                 control={control}
@@ -216,21 +306,6 @@ export default function VideosScreen() {
                     onChangeText={onChange}
                     error={!!errors.title}
                     errorMessage={errors.title?.message}
-                  />
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="videoUrl"
-                render={({ field: { onChange, value } }) => (
-                  <Input
-                    label={STRINGS.videos.formVideoUrlLabel}
-                    placeholder={STRINGS.videos.formVideoUrlPlaceholder}
-                    value={value}
-                    onChangeText={onChange}
-                    error={!!errors.videoUrl}
-                    errorMessage={errors.videoUrl?.message}
                   />
                 )}
               />
@@ -371,5 +446,18 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: SPACING.md,
+  },
+  loaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: -SPACING.sm,
+    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.xs,
+  },
+  loaderText: {
+    fontSize: 12,
+    color: COLORS.primary,
+    marginLeft: 8,
+    fontWeight: '600',
   },
 });
