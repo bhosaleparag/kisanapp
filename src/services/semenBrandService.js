@@ -1,5 +1,7 @@
-import { db, isMock } from './firebase';
-import { collection, getDocs, doc, setDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import { Platform } from 'react-native';
+import { ref, putFile, getDownloadURL } from '@react-native-firebase/storage';
+import { db, storage, isMock } from './firebase';
+import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from '@react-native-firebase/firestore';
 
 // Initial local fallback/mock brands array
 let mockBrands = [
@@ -62,6 +64,28 @@ export const getSemenBrands = async () => {
 };
 
 /**
+ * Upload single semen brand logo image to Firebase Storage
+ */
+export const uploadSemenBrandLogo = async (brandId, localUri) => {
+  if (!localUri) return '';
+  if (localUri.startsWith('http://') || localUri.startsWith('https://')) return localUri;
+  if (isMock) {
+    console.log(`[SemenBrandService] Mock Firebase: Using local image URI for brand logo`);
+    return localUri;
+  }
+  try {
+    const fileUri = Platform.OS === 'ios' ? localUri.replace('file://', '') : localUri;
+    const storageRef = ref(storage, `semen_brands/${brandId}_logo.jpg`);
+    await putFile(storageRef, fileUri);
+    const downloadUrl = await getDownloadURL(storageRef);
+    return downloadUrl;
+  } catch (error) {
+    console.error(`[SemenBrandService] Storage upload failed for ${localUri}:`, error);
+    return localUri;
+  }
+};
+
+/**
  * Add a new semen brand record to Firestore at path '/semen_brands/{brandId}'.
  * Automatically derives brandId from the name.
  */
@@ -74,10 +98,16 @@ export const addSemenBrand = async (brandData) => {
     .replace(/(^_|_$)/g, '');
   const brandId = `brand_${formattedName}`;
 
+  // Upload logo image to Firebase Storage if provided
+  let logoUrl = 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=200'; // Default cow silhouette fallback
+  if (brandData.logoUrl) {
+    logoUrl = await uploadSemenBrandLogo(brandId, brandData.logoUrl);
+  }
+
   const completedBrand = {
     brandId,
     brandName: brandData.brandName,
-    logoUrl: brandData.logoUrl || 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=200', // Default cow silhouette fallback
+    logoUrl,
     isActive: brandData.isActive !== undefined ? brandData.isActive : true,
     createdAt: new Date().toISOString()
   };
@@ -97,6 +127,66 @@ export const addSemenBrand = async (brandData) => {
     return completedBrand;
   } catch (error) {
     console.error('[SemenBrandService] Error in addSemenBrand:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update an existing semen brand record in Firestore.
+ */
+export const updateSemenBrand = async (brandId, brandData) => {
+  // Upload logo image to Firebase Storage if it's a new local URI
+  let logoUrl = brandData.logoUrl;
+  if (logoUrl && !logoUrl.startsWith('http://') && !logoUrl.startsWith('https://')) {
+    logoUrl = await uploadSemenBrandLogo(brandId, logoUrl);
+  }
+
+  const completedBrand = {
+    brandName: brandData.brandName,
+    logoUrl: logoUrl || 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=200',
+    isActive: brandData.isActive !== undefined ? brandData.isActive : true,
+    updatedAt: new Date().toISOString()
+  };
+
+  if (isMock) {
+    console.log('[SemenBrandService] Mock Firebase: updating brand in local list');
+    const index = mockBrands.findIndex(b => b.brandId === brandId);
+    if (index !== -1) {
+      mockBrands[index] = { ...mockBrands[index], ...completedBrand };
+      return mockBrands[index];
+    }
+    throw new Error('Brand not found');
+  }
+
+  try {
+    const docRef = doc(db, 'semen_brands', brandId);
+    await setDoc(docRef, {
+      ...completedBrand,
+      serverUpdatedAt: serverTimestamp(),
+    }, { merge: true });
+    return { brandId, ...completedBrand };
+  } catch (error) {
+    console.error('[SemenBrandService] Error in updateSemenBrand:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a semen brand record from Firestore.
+ */
+export const deleteSemenBrand = async (brandId) => {
+  if (isMock) {
+    console.log('[SemenBrandService] Mock Firebase: deleting brand from local list');
+    mockBrands = mockBrands.filter(b => b.brandId !== brandId);
+    return true;
+  }
+
+  try {
+    const docRef = doc(db, 'semen_brands', brandId);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error('[SemenBrandService] Error in deleteSemenBrand:', error);
     throw error;
   }
 };

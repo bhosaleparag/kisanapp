@@ -4,17 +4,75 @@ import { Text, IconButton, Divider } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
+import { useAppStore } from '../../store/useAppStore';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
+import BullFormModal from '../../components/BullFormModal';
 
 const { width } = Dimensions.get('window');
+
+// Helper to extract the short/common name from full pedigree names (e.g. STANTONS MAIN EVENT-ET -> MAINEVENT)
+const cleanPedigreeName = (name) => {
+  if (!name) return '';
+
+  // Convert to uppercase and strip common trailing suffixes (e.g. -ET, ET, -ET-ET, etc.)
+  let cleaned = name.toUpperCase()
+    .replace(/-ET\b/g, '')
+    .replace(/\bET\b/g, '')
+    .trim();
+
+  // Split by spaces, dashes, or slashes to get individual word tokens
+  const words = cleaned.split(/[\s\-_/]+/);
+
+  // List of known prefixes, breed suffixes, genetic codes, and labels to filter out
+  const blacklist = new Set([
+    'STANTONS', 'APINA', 'ROYLANE', 'SOCRA', 'DE-SU', 'VAL-BISSON', 'MOUNTFIELD',
+    'SEAGULL-BAY', 'COYNE-FARMS', 'FLEVO', 'COMPASS-TRT', 'AMRC', 'AE', 'SSI', 'S-S-I',
+    'MR', 'MRS', 'MS', 'COYNE', 'FARMS', 'BACON', 'PINE-TREE', 'SANDY-VALLEY', 'EDG',
+    'UCD', 'MAPLE-DOWNS-I', 'LOOKOUT', 'PESCE', 'FUSTEAD', 'JELLY', 'COOKIECUTTER',
+    'CLEAR-ECHO', 'BOMAZ', 'CO-OP', 'WESSWOOD', 'ENSENADA', 'T-SPRUCE', 'R-E-W',
+    'LADYS-MANOR', 'RI-VAL-RE', 'MOGUL', 'SUPER', 'SUPERSIRE', 'ET', 'CRI', 'MGS', 'MGD',
+    'MGGS', 'PGS', 'PGD', 'SIRE', 'DAM'
+  ]);
+
+  const filteredWords = words
+    .map(w => w.trim())
+    .filter(w => {
+      if (!w) return false;
+      // Filter out pure numbers or alphanumeric strings that contain numbers (e.g. J925, 13050)
+      if (/\d/.test(w)) return false;
+      // Filter out blacklisted prefixes
+      if (blacklist.has(w)) return false;
+      // Filter out small words that look like genetic/country codes unless it is the only word
+      if (w.length <= 2 && words.length > 1) return false;
+      return true;
+    })
+    .map(w => {
+      // Strip 'ALTA' prefix from words starting with it (e.g. ALTAEMBASSY -> EMBASSY)
+      if (w.startsWith('ALTA') && w.length > 4) {
+        return w.substring(4);
+      }
+      return w;
+    });
+
+  // If we filtered everything, fallback to the original first word (excluding suffixes)
+  if (filteredWords.length === 0) {
+    const fallbackWords = words.filter(w => !/^-?ET\b/i.test(w) && w.length > 0);
+    return fallbackWords[fallbackWords.length - 1] || name;
+  }
+
+  // Join the remaining words together with no spaces as shown in the requested example (MAINEVENT)
+  return filteredWords.join('');
+};
 
 export default function CdcbDataSheetScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { bull } = route.params || {};
-
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentBull, setCurrentBull] = useState(bull);
+  const user = useAppStore((state) => state.user);
+  const isAdmin = user?.role === 'admin';
   const strings = STRINGS.bullInfo;
 
   // Helper to format numeric values with + or - signs
@@ -26,7 +84,7 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
     return `${num}${unit}`;
   };
 
-  if (!bull) {
+  if (!currentBull) {
     return (
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{STRINGS.common.noData}</Text>
@@ -36,12 +94,12 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
   }
 
   // Get image array or fallback
-  const images = bull.photoUrls && bull.photoUrls.length > 0 ? bull.photoUrls : [bull.photoUrl];
+  const images = currentBull.photoUrls && currentBull.photoUrls.length > 0 ? currentBull.photoUrls : [currentBull.photoUrl];
 
   // Helper to share CDCB datasheet
   const handleShare = async () => {
     try {
-      const shareMsg = `*वळू माहिती आणि CDCB डेटा पत्रक*\n\nवळू: ${bull.naabCode} ${bull.bullName}\nनोंदणी क्रमांक: ${bull.registrationNumber}\nBreed: ${bull.breed}\nTPI: +${bull.tpi || 'N/A'}\n\n*पैदावर आणि वंशावळ सुधारण्यासाठी लिनीअर शेती ॲप वापरा!*`;
+      const shareMsg = `*वळू माहिती आणि CDCB डेटा पत्रक*\n\nवळू: ${currentBull.naabCode} ${currentBull.bullName}\nनोंदणी क्रमांक: ${currentBull.registrationNumber}\nBreed: ${currentBull.breed}\nTPI: +${currentBull.tpi || 'N/A'}\n\n*पैदावर आणि वंशावळ सुधारण्यासाठी लिनीअर शेती ॲप वापरा!*`;
       await Share.share({
         message: shareMsg,
       });
@@ -51,8 +109,8 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
   };
 
   // Safe destructuring of nested objects
-  const pedigree = bull.pedigree || {};
-  const cdcbChart = bull.cdcbChart || {};
+  const pedigree = currentBull.pedigree || {};
+  const cdcbChart = currentBull.cdcbChart || {};
   const production = cdcbChart.production || {};
   const health = cdcbChart.health || {};
   const conformation = cdcbChart.conformation || {};
@@ -61,21 +119,36 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
     <View style={styles.container}>
       {/* Custom Header Bar */}
       <View style={[styles.header, { paddingTop: insets.top + SPACING.xs }]}>
-        <IconButton
-          icon="arrow-left"
-          iconColor="#FFFFFF"
-          size={24}
-          onPress={() => navigation.goBack()}
-          style={styles.backBtn}
-        />
+        <View style={styles.headerLeft}>
+          <IconButton
+            icon="arrow-left"
+            iconColor="#FFFFFF"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+          />
+        </View>
+
         <Text style={styles.headerTitle}>{strings.cdcbSheetTitle}</Text>
-        <IconButton
-          icon="share-variant"
-          iconColor="#FFFFFF"
-          size={24}
-          onPress={handleShare}
-          style={styles.shareBtn}
-        />
+
+        <View style={styles.headerRight}>
+          {isAdmin && (
+            <IconButton
+              icon="pencil"
+              iconColor="#FFFFFF"
+              size={24}
+              onPress={() => setModalVisible(true)}
+              style={styles.editBtn}
+            />
+          )}
+          <IconButton
+            icon="share-variant"
+            iconColor="#FFFFFF"
+            size={24}
+            onPress={handleShare}
+            style={styles.shareBtn}
+          />
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -118,10 +191,10 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
         <View style={styles.idCard}>
           {/* Display exact requested format: 250HO13553 SPIKE / Reg: HO84... */}
           <Text style={styles.bullIdentityTitle}>
-            {bull.naabCode} {bull.bullName}
+            {currentBull.naabCode} {currentBull.bullName}
           </Text>
           <Text style={styles.bullRegNumber}>
-            Reg: {bull.registrationNumber}
+            Reg: {currentBull.registrationNumber}
           </Text>
           <Divider style={styles.divider} />
 
@@ -129,13 +202,13 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
           <View style={styles.highlightsRow}>
             <View style={styles.highlightBadge}>
               <Text style={styles.badgeLabel}>{strings.breedLabelForm}</Text>
-              <Text style={styles.badgeVal}>{bull.breed}</Text>
+              <Text style={styles.badgeVal}>{currentBull.breed}</Text>
             </View>
-            
-            {bull.tpi && (
+
+            {currentBull.tpi && (
               <View style={[styles.highlightBadge, styles.tpiBadge]}>
                 <Text style={[styles.badgeLabel, styles.tpiLabelText]}>TPI</Text>
-                <Text style={[styles.badgeVal, styles.tpiValText]}>+{bull.tpi}</Text>
+                <Text style={[styles.badgeVal, styles.tpiValText]}>+{currentBull.tpi}</Text>
               </View>
             )}
 
@@ -158,11 +231,24 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
         {/* 1. Pedigree Section */}
         <Card title="वंशावळ (Pedigree)" style={styles.sectionCard}>
           <View style={styles.pedigreeGrid}>
+            {/* Ancestry Lineage Header (Sire x MGS x MGGS format, e.g. MAINEVENT x EMBASSY x ROBUST) */}
+            {(pedigree.sire || pedigree.mgs || pedigree.mggs) ? (
+              <View style={styles.lineageHeader}>
+                <Text style={styles.lineageText}>
+                  {[pedigree.sire, pedigree.mgs, pedigree.mggs]
+                    .filter(Boolean)
+                    .map(cleanPedigreeName)
+                    .filter(Boolean)
+                    .join(' x ') || 'N/A'}
+                </Text>
+              </View>
+            ) : null}
+
             <View style={styles.pedigreeRow}>
               <Text style={styles.pedigreeLabel}>{strings.sireLabel}:</Text>
               <Text style={styles.pedigreeValue}>{pedigree.sire || 'N/A'}</Text>
             </View>
-            
+
             <View style={styles.pedigreeRow}>
               <Text style={styles.pedigreeLabel}>{strings.damSireLabel}:</Text>
               <Text style={styles.pedigreeValue}>{pedigree.damSire || 'N/A'}</Text>
@@ -341,6 +427,16 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
           </View>
         </Card>
       </ScrollView>
+
+      {/* Edit Bull Modal Form */}
+      <BullFormModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        bull={currentBull}
+        onSuccess={(updated) => {
+          setCurrentBull(updated);
+        }}
+      />
     </View>
   );
 }
@@ -374,10 +470,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
   },
+  headerLeft: {
+    width: 80,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  headerRight: {
+    width: 80,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
   backBtn: {
     margin: 0,
   },
   shareBtn: {
+    margin: 0,
+  },
+  editBtn: {
     margin: 0,
   },
   headerTitle: {
@@ -680,5 +791,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 'bold',
     color: COLORS.textPrimary,
+  },
+  lineageHeader: {
+    backgroundColor: COLORS.primaryLight,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    borderRadius: SIZES.radiusMd,
+    marginBottom: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.primary + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lineageText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.primaryDark,
+    textAlign: 'center',
   },
 });

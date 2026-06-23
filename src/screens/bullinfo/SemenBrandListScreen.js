@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList, Image, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, Image, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Text, ActivityIndicator, FAB, Portal, Modal, IconButton } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePickerSDK from 'expo-image-picker';
 import { COLORS, SIZES, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { STRINGS } from '../../constants/strings';
 import { semenBrandSchema } from '../../utils/schemas';
-import { getSemenBrands, addSemenBrand } from '../../services/semenBrandService';
+import { getSemenBrands, addSemenBrand, updateSemenBrand, deleteSemenBrand } from '../../services/semenBrandService';
 import { useAppStore } from '../../store/useAppStore';
 import Card from '../../components/Card';
 import Input from '../../components/Input';
@@ -21,8 +22,69 @@ export default function SemenBrandListScreen({ navigation }) {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editingBrand, setEditingBrand] = useState(null);
 
   const strings = STRINGS.bullInfo;
+
+  // Safe permission checking & request
+  const requestCameraAccess = async () => {
+    const { status } = await ImagePickerSDK.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(STRINGS.common.appName, STRINGS.common.permissionDenied);
+      return false;
+    }
+    return true;
+  };
+
+  const requestLibraryAccess = async () => {
+    const { status } = await ImagePickerSDK.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(STRINGS.common.appName, STRINGS.common.permissionDenied);
+      return false;
+    }
+    return true;
+  };
+
+  // Launch Camera capture
+  const handleTakePhoto = async (onChange) => {
+    const hasPermission = await requestCameraAccess();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePickerSDK.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1], // Square logo is optimal
+        quality: 0.7,   // High-contrast compression to keep size low
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        onChange(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error taking photo:', error);
+    }
+  };
+
+  // Launch Gallery selector
+  const handleSelectPhoto = async (onChange) => {
+    const hasPermission = await requestLibraryAccess();
+    if (!hasPermission) return;
+
+    try {
+      const result = await ImagePickerSDK.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        onChange(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error selecting photo:', error);
+    }
+  };
 
   // Load brands on mount
   const fetchBrands = async () => {
@@ -59,16 +121,63 @@ export default function SemenBrandListScreen({ navigation }) {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      await addSemenBrand(data);
+      if (editingBrand) {
+        await updateSemenBrand(editingBrand.brandId, data);
+        Alert.alert(STRINGS.common.success, strings.updateBrandSuccess);
+      } else {
+        await addSemenBrand(data);
+        Alert.alert(STRINGS.common.success, strings.saveBrandSuccess);
+      }
       setModalVisible(false);
+      setEditingBrand(null);
       reset();
       // Refresh list
       await fetchBrands();
-      Alert.alert(STRINGS.common.success, strings.saveBrandSuccess);
     } catch (error) {
       setLoading(false);
-      Alert.alert(STRINGS.common.errorTitle, strings.saveBrandError);
+      Alert.alert(
+        STRINGS.common.errorTitle,
+        editingBrand ? strings.updateBrandError : strings.saveBrandError
+      );
     }
+  };
+
+  const handleEditBrand = (brand) => {
+    setEditingBrand(brand);
+    reset({
+      brandName: brand.brandName,
+      logoUrl: brand.logoUrl || '',
+      isActive: brand.isActive !== undefined ? brand.isActive : true,
+    });
+    setModalVisible(true);
+  };
+
+  const handleDeleteBrand = (brand) => {
+    Alert.alert(
+      strings.deleteBrandConfirmTitle,
+      strings.deleteBrandConfirmDesc,
+      [
+        {
+          text: STRINGS.common.cancel,
+          style: 'cancel',
+        },
+        {
+          text: STRINGS.common.confirm,
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await deleteSemenBrand(brand.brandId);
+              Alert.alert(STRINGS.common.success, strings.deleteBrandSuccess);
+              await fetchBrands();
+            } catch (error) {
+              setLoading(false);
+              Alert.alert(STRINGS.common.errorTitle, strings.deleteBrandError);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleBrandPress = (brand) => {
@@ -82,12 +191,36 @@ export default function SemenBrandListScreen({ navigation }) {
   const renderBrandItem = ({ item }) => {
     return (
       <Card
-        onPress={() => handleBrandPress(item)}
         style={styles.brandCard}
       >
         <View style={styles.brandRow}>
-          <Image source={{ uri: item.logoUrl }} style={styles.brandLogo} resizeMode="cover" />
-          <Text style={styles.brandNameText}>{item.brandName}</Text>
+          <TouchableOpacity
+            style={styles.brandMainInfo}
+            onPress={() => handleBrandPress(item)}
+            activeOpacity={0.7}
+          >
+            <Image source={{ uri: item.logoUrl }} style={styles.brandLogo} resizeMode="cover" />
+            <Text style={styles.brandNameText}>{item.brandName}</Text>
+          </TouchableOpacity>
+
+          {isAdmin && (
+            <View style={styles.actionButtonsContainer}>
+              <IconButton
+                icon="pencil"
+                iconColor={COLORS.primary}
+                size={22}
+                onPress={() => handleEditBrand(item)}
+                style={styles.actionBtn}
+              />
+              <IconButton
+                icon="delete"
+                iconColor={COLORS.error}
+                size={22}
+                onPress={() => handleDeleteBrand(item)}
+                style={styles.actionBtn}
+              />
+            </View>
+          )}
         </View>
       </Card>
     );
@@ -134,12 +267,13 @@ export default function SemenBrandListScreen({ navigation }) {
         />
       )}
 
-      {/* Add Brand Modal */}
+      {/* Add/Edit Brand Modal */}
       <Portal>
         <Modal
           visible={modalVisible}
           onDismiss={() => {
             setModalVisible(false);
+            setEditingBrand(null);
             reset();
           }}
           contentContainerStyle={styles.modalContainer}
@@ -147,12 +281,15 @@ export default function SemenBrandListScreen({ navigation }) {
           <ScrollView contentContainerStyle={styles.modalScroll} keyboardShouldPersistTaps="handled">
             {/* Modal Header */}
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{strings.addBrand}</Text>
+              <Text style={styles.modalTitle}>
+                {editingBrand ? strings.editBrand : strings.addBrand}
+              </Text>
               <IconButton
                 icon="close"
                 size={24}
                 onPress={() => {
                   setModalVisible(false);
+                  setEditingBrand(null);
                   reset();
                 }}
               />
@@ -174,19 +311,53 @@ export default function SemenBrandListScreen({ navigation }) {
               )}
             />
 
-            {/* Logo URL Input */}
+            {/* Logo Image Picker */}
             <Controller
               control={control}
               name="logoUrl"
               render={({ field: { onChange, value } }) => (
-                <Input
-                  label={strings.logoUrlLabel}
-                  placeholder={strings.logoUrlPlaceholder}
-                  value={value}
-                  onChangeText={onChange}
-                  error={!!errors.logoUrl}
-                  errorMessage={errors.logoUrl?.message}
-                />
+                <View style={styles.imageSelectorContainer}>
+                  <Text style={styles.imageSectionTitle}>{strings.logoUrlLabel}</Text>
+                  
+                  {value ? (
+                    <View style={styles.selectedContainer}>
+                      <Text style={styles.selectedText}>✅ {strings.logoSelected}</Text>
+                      <IconButton
+                        icon="close-circle"
+                        size={20}
+                        iconColor={COLORS.error}
+                        style={styles.removeBtn}
+                        onPress={() => onChange('')}
+                      />
+                    </View>
+                  ) : (
+                    <Text style={styles.noImagesText}>{strings.logoUrlPlaceholder}</Text>
+                  )}
+
+                  {!value && (
+                    <View style={styles.imageActionButtons}>
+                      <Button
+                        title={strings.cameraOption}
+                        icon="camera"
+                        mode="outlined"
+                        onPress={() => handleTakePhoto(onChange)}
+                        style={styles.pickerButton}
+                        labelStyle={styles.pickerButtonLabel}
+                      />
+                      <Button
+                        title={strings.galleryOption}
+                        icon="image-multiple"
+                        mode="outlined"
+                        onPress={() => handleSelectPhoto(onChange)}
+                        style={styles.pickerButton}
+                        labelStyle={styles.pickerButtonLabel}
+                      />
+                    </View>
+                  )}
+                  {!!errors.logoUrl && (
+                    <Text style={styles.errorText}>{errors.logoUrl?.message}</Text>
+                  )}
+                </View>
               )}
             />
 
@@ -296,5 +467,73 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: SPACING.md,
+  },
+  imageSelectorContainer: {
+    marginVertical: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: SIZES.radiusMd,
+    padding: SPACING.md,
+    backgroundColor: COLORS.surface,
+  },
+  imageSectionTitle: {
+    fontSize: TYPOGRAPHY.fontSizeSm,
+    fontWeight: 'bold',
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.sm,
+  },
+  noImagesText: {
+    fontSize: TYPOGRAPHY.fontSizeSm,
+    color: COLORS.textSecondary,
+    fontStyle: 'italic',
+    marginBottom: SPACING.sm,
+  },
+  selectedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: SIZES.radiusSm,
+  },
+  selectedText: {
+    fontSize: TYPOGRAPHY.fontSizeSm,
+    color: COLORS.primary,
+    fontWeight: '600',
+    flex: 1,
+  },
+  removeBtn: {
+    margin: 0,
+  },
+  imageActionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: SPACING.xs,
+  },
+  pickerButton: {
+    flex: 1,
+    marginHorizontal: SPACING.xs,
+  },
+  pickerButtonLabel: {
+    fontSize: 12,
+  },
+  errorText: {
+    fontSize: 12,
+    color: COLORS.error,
+    marginTop: SPACING.xs,
+    marginLeft: SPACING.xs,
+  },
+  brandMainInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionBtn: {
+    margin: 0,
   },
 });

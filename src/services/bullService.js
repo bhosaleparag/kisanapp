@@ -189,6 +189,7 @@ export const getBullsByBrand = async (brandId) => {
  */
 export const uploadBullImage = async (bullId, index, localUri) => {
   if (!localUri) return '';
+  if (localUri.startsWith('http://') || localUri.startsWith('https://')) return localUri;
   if (isMock) {
     console.log(`[BullService] Mock Firebase: Using local image URI for bull image ${index}`);
     return localUri;
@@ -294,3 +295,108 @@ export const addBullRecord = async (bullData, userId) => {
     throw error;
   }
 };
+
+/**
+ * Update an existing bull record document under /bull_records/{bullId}
+ */
+export const updateBullRecord = async (bullId, bullData, userId) => {
+  // Upload select images to Firebase Storage (handling mixed local/remote URIs)
+  const photoUrls = [];
+  if (bullData.localImageUris && bullData.localImageUris.length > 0) {
+    for (let i = 0; i < bullData.localImageUris.length; i++) {
+      const uri = bullData.localImageUris[i];
+      if (uri.startsWith('http://') || uri.startsWith('https://')) {
+        photoUrls.push(uri);
+      } else {
+        const url = await uploadBullImage(bullId, i, uri);
+        if (url) {
+          photoUrls.push(url);
+        }
+      }
+    }
+  }
+
+  const completedBull = {
+    bullId,
+    brandId: bullData.brandId,
+    brandName: bullData.brandName,
+    bullName: bullData.bullName,
+    naabCode: bullData.naabCode,
+    registrationNumber: bullData.registrationNumber || '',
+    tpi: bullData.tpi || '',
+    breed: bullData.breed,
+    photoUrl: photoUrls.length > 0 ? photoUrls[0] : (bullData.photoUrl || 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=300'),
+    photoUrls: photoUrls.length > 0 ? photoUrls : (bullData.photoUrl ? [bullData.photoUrl] : ['https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=300']),
+    pedigree: {
+      sire: bullData.sire || '',
+      damSire: bullData.damSire || '',
+      mgs: bullData.mgs || '',
+      mgd: bullData.mgd || '',
+      mggs: bullData.mggs || ''
+    },
+    cdcbChart: {
+      evaluationDate: bullData.evaluationDate || 'June 2026',
+      production: {
+        milkLbs: parseFloat(bullData.milkLbs) || 0,
+        fatLbs: parseFloat(bullData.fatLbs) || 0,
+        fatPercent: parseFloat(bullData.fatPercent) || 0,
+        proteinLbs: parseFloat(bullData.proteinLbs) || 0,
+        proteinPercent: parseFloat(bullData.proteinPercent) || 0,
+        reliability: parseInt(bullData.reliability) || 0
+      },
+      health: {
+        productiveLife: parseFloat(bullData.productiveLife) || 0,
+        daughterPregnancyRate: parseFloat(bullData.daughterPregnancyRate) || 0,
+        heiferConceptionRate: parseFloat(bullData.heiferConceptionRate) || 0,
+        cowConceptionRate: parseFloat(bullData.cowConceptionRate) || 0,
+        betaCasein: bullData.betaCasein || 'A2A2',
+        somaticCellScore: parseFloat(bullData.somaticCellScore) || 0,
+        sireCalvingEase: parseFloat(bullData.sireCalvingEase) || 0,
+        daughterCalvingEase: parseFloat(bullData.daughterCalvingEase) || 0,
+        sireStillbirth: parseFloat(bullData.sireStillbirth) || 0,
+        daughterStillbirth: parseFloat(bullData.daughterStillbirth) || 0
+      },
+      conformation: {
+        ptat: parseFloat(bullData.ptat) || 0,
+        udderComposite: parseFloat(bullData.udderComposite) || 0,
+        feetLegsComposite: parseFloat(bullData.feetLegsComposite) || 0,
+        bodyWeightComposite: parseFloat(bullData.bodyWeightComposite) || 0
+      }
+    },
+    updatedAt: new Date().toISOString()
+  };
+
+  if (isMock) {
+    console.log('[BullService] Mock mode: updating local bull record');
+    const idx = mockBulls.findIndex((b) => b.bullId === bullId);
+    if (idx !== -1) {
+      mockBulls[idx] = {
+        ...mockBulls[idx],
+        ...completedBull,
+        pedigree: { ...mockBulls[idx].pedigree, ...completedBull.pedigree },
+        cdcbChart: {
+          ...mockBulls[idx].cdcbChart,
+          ...completedBull.cdcbChart,
+          production: { ...mockBulls[idx].cdcbChart?.production, ...completedBull.cdcbChart.production },
+          health: { ...mockBulls[idx].cdcbChart?.health, ...completedBull.cdcbChart.health },
+          conformation: { ...mockBulls[idx].cdcbChart?.conformation, ...completedBull.cdcbChart.conformation }
+        }
+      };
+      return mockBulls[idx];
+    }
+    throw new Error('Bull not found in mock database');
+  }
+
+  try {
+    const docRef = doc(db, 'bull_records', bullId);
+    await setDoc(docRef, {
+      ...completedBull,
+      serverUpdatedAt: serverTimestamp(),
+    }, { merge: true });
+    return completedBull;
+  } catch (error) {
+    console.error('[BullService] Error in updateBullRecord:', error);
+    throw error;
+  }
+};
+

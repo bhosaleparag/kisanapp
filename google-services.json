@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "107787654125-b6l9v7chv1jsjgo5s433olrm0uq5d5rl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bhosaleparag.linearagriculture",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "107787654125-v2dt5hj83aqs48mfronnrn98tm804d91.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -184,10 +184,8 @@ export const semenBrandSchema = z.object({
     .min(2, { message: 'नाव किमान २ अक्षरी असावे.' })
     .max(50, { message: 'नाव ५० अक्षरांपेक्षा जास्त नसावे.' }),
   logoUrl: z
-    .string()
-    .url({ message: 'कृपया वैध इमेज URL प्रविष्ट करा.' })
-    .or(z.literal(''))
-    .optional(),
+    .string({ required_error: 'ब्रँडचा लोगो आवश्यक आहे.' })
+    .min(1, { message: 'ब्रँडचा लोगो आवश्यक आहे.' }),
   isActive: z.boolean().default(true),
 });
 
