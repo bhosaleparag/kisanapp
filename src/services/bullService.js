@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 import { ref, putFile, getDownloadURL } from '@react-native-firebase/storage';
-import { collection, getDocs, doc, setDoc, query, where, serverTimestamp } from '@react-native-firebase/firestore';
+import { collection, getDocs, doc, setDoc, query, where, serverTimestamp, writeBatch } from '@react-native-firebase/firestore';
 import { db, storage, isMock } from './firebase';
 
 // Initial pre-seeded mock bull records array
@@ -31,11 +31,13 @@ let mockBulls = [
         fatPercent: 0.08,
         proteinLbs: 48,
         proteinPercent: 0.03,
+        combinedFatProtein: 120,
         reliability: 98
       },
       health: {
         productiveLife: 4.8,
         daughterPregnancyRate: 0.2,
+        sireConceptionRate: 1.5,
         heiferConceptionRate: 1.5,
         cowConceptionRate: 0.8,
         betaCasein: 'A2A2',
@@ -43,7 +45,13 @@ let mockBulls = [
         sireCalvingEase: 1.9,
         daughterCalvingEase: 2.1,
         sireStillbirth: 5.5,
-        daughterStillbirth: 6.2
+        daughterStillbirth: 6.2,
+        mast: 3.0,
+        metr: 1.8,
+        keto: 2.1,
+        repl: 0.8,
+        dsab: 1.2,
+        mfev: 0.5
       },
       conformation: {
         ptat: 1.35,
@@ -81,11 +89,13 @@ let mockBulls = [
         fatPercent: 0.06,
         proteinLbs: 42,
         proteinPercent: 0.02,
+        combinedFatProtein: 107,
         reliability: 95
       },
       health: {
         productiveLife: 4.2,
         daughterPregnancyRate: 0.5,
+        sireConceptionRate: 2.0,
         heiferConceptionRate: 2.0,
         cowConceptionRate: 1.2,
         betaCasein: 'A1A2',
@@ -93,7 +103,13 @@ let mockBulls = [
         sireCalvingEase: 2.1,
         daughterCalvingEase: 1.9,
         sireStillbirth: 5.8,
-        daughterStillbirth: 6.0
+        daughterStillbirth: 6.0,
+        mast: 2.5,
+        metr: 1.2,
+        keto: 1.5,
+        repl: 0.5,
+        dsab: 0.8,
+        mfev: 0.2
       },
       conformation: {
         ptat: 1.20,
@@ -131,11 +147,13 @@ let mockBulls = [
         fatPercent: 0.12,
         proteinLbs: 35,
         proteinPercent: 0.05,
+        combinedFatProtein: 93,
         reliability: 93
       },
       health: {
         productiveLife: 5.0,
         daughterPregnancyRate: 1.0,
+        sireConceptionRate: 1.0,
         heiferConceptionRate: 1.8,
         cowConceptionRate: 1.0,
         betaCasein: 'A2A2',
@@ -143,7 +161,13 @@ let mockBulls = [
         sireCalvingEase: 1.8,
         daughterCalvingEase: 2.0,
         sireStillbirth: 5.2,
-        daughterStillbirth: 5.9
+        daughterStillbirth: 5.9,
+        mast: 1.8,
+        metr: 0.9,
+        keto: 1.1,
+        repl: 0.3,
+        dsab: 0.5,
+        mfev: 0.1
       },
       conformation: {
         ptat: 1.10,
@@ -250,11 +274,13 @@ export const addBullRecord = async (bullData, userId) => {
         fatPercent: parseFloat(bullData.fatPercent) || 0,
         proteinLbs: parseFloat(bullData.proteinLbs) || 0,
         proteinPercent: parseFloat(bullData.proteinPercent) || 0,
+        combinedFatProtein: parseFloat(bullData.combinedFatProtein) || 0,
         reliability: parseInt(bullData.reliability) || 0
       },
       health: {
         productiveLife: parseFloat(bullData.productiveLife) || 0,
         daughterPregnancyRate: parseFloat(bullData.daughterPregnancyRate) || 0,
+        sireConceptionRate: parseFloat(bullData.sireConceptionRate) || 0,
         heiferConceptionRate: parseFloat(bullData.heiferConceptionRate) || 0,
         cowConceptionRate: parseFloat(bullData.cowConceptionRate) || 0,
         betaCasein: bullData.betaCasein || 'A2A2',
@@ -262,7 +288,13 @@ export const addBullRecord = async (bullData, userId) => {
         sireCalvingEase: parseFloat(bullData.sireCalvingEase) || 0,
         daughterCalvingEase: parseFloat(bullData.daughterCalvingEase) || 0,
         sireStillbirth: parseFloat(bullData.sireStillbirth) || 0,
-        daughterStillbirth: parseFloat(bullData.daughterStillbirth) || 0
+        daughterStillbirth: parseFloat(bullData.daughterStillbirth) || 0,
+        mast: parseFloat(bullData.mast) || 0,
+        metr: parseFloat(bullData.metr) || 0,
+        keto: parseFloat(bullData.keto) || 0,
+        repl: parseFloat(bullData.repl) || 0,
+        dsab: parseFloat(bullData.dsab) || 0,
+        mfev: parseFloat(bullData.mfev) || 0
       },
       conformation: {
         ptat: parseFloat(bullData.ptat) || 0,
@@ -342,11 +374,13 @@ export const updateBullRecord = async (bullId, bullData, userId) => {
         fatPercent: parseFloat(bullData.fatPercent) || 0,
         proteinLbs: parseFloat(bullData.proteinLbs) || 0,
         proteinPercent: parseFloat(bullData.proteinPercent) || 0,
+        combinedFatProtein: parseFloat(bullData.combinedFatProtein) || 0,
         reliability: parseInt(bullData.reliability) || 0
       },
       health: {
         productiveLife: parseFloat(bullData.productiveLife) || 0,
         daughterPregnancyRate: parseFloat(bullData.daughterPregnancyRate) || 0,
+        sireConceptionRate: parseFloat(bullData.sireConceptionRate) || 0,
         heiferConceptionRate: parseFloat(bullData.heiferConceptionRate) || 0,
         cowConceptionRate: parseFloat(bullData.cowConceptionRate) || 0,
         betaCasein: bullData.betaCasein || 'A2A2',
@@ -354,7 +388,13 @@ export const updateBullRecord = async (bullId, bullData, userId) => {
         sireCalvingEase: parseFloat(bullData.sireCalvingEase) || 0,
         daughterCalvingEase: parseFloat(bullData.daughterCalvingEase) || 0,
         sireStillbirth: parseFloat(bullData.sireStillbirth) || 0,
-        daughterStillbirth: parseFloat(bullData.daughterStillbirth) || 0
+        daughterStillbirth: parseFloat(bullData.daughterStillbirth) || 0,
+        mast: parseFloat(bullData.mast) || 0,
+        metr: parseFloat(bullData.metr) || 0,
+        keto: parseFloat(bullData.keto) || 0,
+        repl: parseFloat(bullData.repl) || 0,
+        dsab: parseFloat(bullData.dsab) || 0,
+        mfev: parseFloat(bullData.mfev) || 0
       },
       conformation: {
         ptat: parseFloat(bullData.ptat) || 0,
@@ -396,6 +436,51 @@ export const updateBullRecord = async (bullId, bullData, userId) => {
     return completedBull;
   } catch (error) {
     console.error('[BullService] Error in updateBullRecord:', error);
+    throw error;
+  }
+};
+
+/**
+ * Bulk update Milk Lbs values for multiple bulls.
+ * Handles both mock database updates and Firestore batch updates.
+ * @param {Array} updates - Array of objects containing { bullId, milkLbs }
+ */
+export const bulkUpdateMilkLbs = async (updates) => {
+  if (!updates || updates.length === 0) return true;
+
+  if (isMock) {
+    console.log('[BullService] Mock mode: performing bulk update of Milk Lbs');
+    updates.forEach(({ bullId, milkLbs }) => {
+      const idx = mockBulls.findIndex((b) => b.bullId === bullId);
+      if (idx !== -1) {
+        // Ensure cdcbChart.production exists before writing
+        if (!mockBulls[idx].cdcbChart) {
+          mockBulls[idx].cdcbChart = { production: {} };
+        } else if (!mockBulls[idx].cdcbChart.production) {
+          mockBulls[idx].cdcbChart.production = {};
+        }
+        
+        mockBulls[idx].cdcbChart.production.milkLbs = parseFloat(milkLbs) || 0;
+        mockBulls[idx].updatedAt = new Date().toISOString();
+      }
+    });
+    return true;
+  }
+
+  try {
+    const batch = writeBatch(db);
+    updates.forEach(({ bullId, milkLbs }) => {
+      const docRef = doc(db, 'bull_records', bullId);
+      batch.update(docRef, {
+        'cdcbChart.production.milkLbs': parseFloat(milkLbs) || 0,
+        updatedAt: new Date().toISOString(),
+        serverUpdatedAt: serverTimestamp(),
+      });
+    });
+    await batch.commit();
+    return true;
+  } catch (error) {
+    console.error('[BullService] Error performing bulk update:', error);
     throw error;
   }
 };

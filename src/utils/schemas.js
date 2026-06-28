@@ -231,10 +231,12 @@ export const bullRecordSchema = z.object({
   fatPercent: z.string().optional(),
   proteinLbs: z.string().optional(),
   proteinPercent: z.string().optional(),
+  combinedFatProtein: z.string().optional(),
   reliability: z.string().optional(),
   
   productiveLife: z.string().optional(),
   daughterPregnancyRate: z.string().optional(),
+  sireConceptionRate: z.string().optional(),
   heiferConceptionRate: z.string().optional(),
   cowConceptionRate: z.string().optional(),
   betaCasein: z.string().optional(),
@@ -243,6 +245,13 @@ export const bullRecordSchema = z.object({
   daughterCalvingEase: z.string().optional(),
   sireStillbirth: z.string().optional(),
   daughterStillbirth: z.string().optional(),
+  
+  mast: z.string().optional(),
+  metr: z.string().optional(),
+  keto: z.string().optional(),
+  repl: z.string().optional(),
+  dsab: z.string().optional(),
+  mfev: z.string().optional(),
   
   ptat: z.string().optional(),
   udderComposite: z.string().optional(),

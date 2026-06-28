@@ -134,9 +134,11 @@ export default function BullFormModal({
         fatPercent: String(production.fatPercent ?? ''),
         proteinLbs: String(production.proteinLbs ?? ''),
         proteinPercent: String(production.proteinPercent ?? ''),
+        combinedFatProtein: String(production.combinedFatProtein ?? ''),
         reliability: String(production.reliability ?? ''),
         productiveLife: String(health.productiveLife ?? ''),
         daughterPregnancyRate: String(health.daughterPregnancyRate ?? ''),
+        sireConceptionRate: String(health.sireConceptionRate ?? ''),
         heiferConceptionRate: String(health.heiferConceptionRate ?? ''),
         cowConceptionRate: String(health.cowConceptionRate ?? ''),
         betaCasein: health.betaCasein || 'A2A2',
@@ -145,6 +147,12 @@ export default function BullFormModal({
         daughterCalvingEase: String(health.daughterCalvingEase ?? ''),
         sireStillbirth: String(health.sireStillbirth ?? ''),
         daughterStillbirth: String(health.daughterStillbirth ?? ''),
+        mast: String(health.mast ?? ''),
+        metr: String(health.metr ?? ''),
+        keto: String(health.keto ?? ''),
+        repl: String(health.repl ?? ''),
+        dsab: String(health.dsab ?? ''),
+        mfev: String(health.mfev ?? ''),
         ptat: String(conformation.ptat ?? ''),
         udderComposite: String(conformation.udderComposite ?? ''),
         feetLegsComposite: String(conformation.feetLegsComposite ?? ''),
@@ -170,9 +178,11 @@ export default function BullFormModal({
       fatPercent: '0.05',
       proteinLbs: '30',
       proteinPercent: '0.02',
+      combinedFatProtein: '100',
       reliability: '90',
       productiveLife: '4.0',
       daughterPregnancyRate: '0.0',
+      sireConceptionRate: '1.5',
       heiferConceptionRate: '1.2',
       cowConceptionRate: '0.5',
       betaCasein: 'A2A2',
@@ -181,6 +191,12 @@ export default function BullFormModal({
       daughterCalvingEase: '2.1',
       sireStillbirth: '5.5',
       daughterStillbirth: '6.2',
+      mast: '2.0',
+      metr: '1.5',
+      keto: '1.5',
+      repl: '0.5',
+      dsab: '0.8',
+      mfev: '0.3',
       ptat: '1.0',
       udderComposite: '1.0',
       feetLegsComposite: '1.0',
@@ -243,7 +259,7 @@ export default function BullFormModal({
         result = await addBullRecord(payload, user?.uid);
         Alert.alert(STRINGS.common.success, strings.saveBullSuccess);
       }
-      
+
       onClose();
       if (onSuccess) {
         onSuccess(result);
@@ -365,7 +381,7 @@ export default function BullFormModal({
           {/* Multi-Image Selector */}
           <View style={styles.imageSelectorContainer}>
             <Text style={styles.imageSectionTitle}>{strings.photoUrlsLabel}</Text>
-            
+
             {/* Selected Images Thumbnail Slider */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.thumbnailList}>
               {selectedImages.map((uri, index) => (
@@ -590,19 +606,18 @@ export default function BullFormModal({
 
           <Controller
             control={control}
-            name="reliability"
+            name="combinedFatProtein"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.reliabilityLabel}
+                label={strings.combinedFatProteinLabel}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
+                placeholder={strings.combinedFatProteinPlaceholder}
                 disabled={saving}
               />
             )}
           />
-
-          <Text style={styles.subSectionHeader}>{strings.healthTitle}</Text>
 
           <Controller
             control={control}
@@ -620,6 +635,22 @@ export default function BullFormModal({
 
           <Controller
             control={control}
+            name="reliability"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.reliabilityLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Text style={styles.subSectionHeader}>{strings.fertilityTitle}</Text>
+
+          <Controller
+            control={control}
             name="daughterPregnancyRate"
             render={({ field: { onChange, value } }) => (
               <Input
@@ -634,10 +665,11 @@ export default function BullFormModal({
 
           <Controller
             control={control}
-            name="heiferConceptionRate"
+            name="sireConceptionRate"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.hcrLabel}
+                label={strings.scrLabel}
+                placeholder={strings.scrPlaceholder}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -652,6 +684,22 @@ export default function BullFormModal({
             render={({ field: { onChange, value } }) => (
               <Input
                 label={strings.ccrLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Text style={styles.subSectionHeader}>{strings.healthTitle}</Text>
+
+          <Controller
+            control={control}
+            name="heiferConceptionRate"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.hcrLabel}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -687,6 +735,92 @@ export default function BullFormModal({
               />
             )}
           />
+
+          <Controller
+            control={control}
+            name="mast"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.mastLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="metr"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.metrLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="keto"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.ketoLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="repl"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.replLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="dsab"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.dsabLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="mfev"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.mfevLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Text style={styles.subSectionHeader}>{strings.calvingTitle}</Text>
 
           <Controller
             control={control}
@@ -765,7 +899,7 @@ export default function BullFormModal({
             name="udderComposite"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.udcLabel}
+                label={strings.udderCompositeLabel || strings.udcLabel}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -779,7 +913,7 @@ export default function BullFormModal({
             name="feetLegsComposite"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.flcLabel}
+                label={strings.feetLegsCompositeLabel || strings.flcLabel}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}

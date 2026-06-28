@@ -297,6 +297,43 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
               <Text style={styles.tableCol}>{formatVal(production.proteinLbs, ' Lbs')} / {formatVal(production.proteinPercent, '%')}</Text>
               <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
             </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.combinedFatProteinLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(production.combinedFatProtein, ' Lbs')}</Text>
+              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.productiveLifeLabel} (PL)</Text>
+              <Text style={styles.tableCol}>{formatVal(health.productiveLife)}</Text>
+              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* 2b. CDCB Fertility Metrics Table [NEW] */}
+        <Card title={strings.fertilityTitle} style={styles.sectionCard}>
+          <View style={styles.table}>
+            <View style={[styles.tableRow, styles.tableHeaderRow]}>
+              <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>प्रजनन घटक (Trait)</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dprLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.daughterPregnancyRate)}</Text>
+            </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scrLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.sireConceptionRate)}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ccrLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.cowConceptionRate)}</Text>
+            </View>
           </View>
         </Card>
 
@@ -309,18 +346,8 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
             </View>
 
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.productiveLifeLabel} (PL)</Text>
-              <Text style={styles.tableCol}>{formatVal(health.productiveLife)}</Text>
-            </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scsLabel} (SCS)</Text>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scsLabel}</Text>
               <Text style={styles.tableCol}>{health.somaticCellScore || 0}</Text>
-            </View>
-
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dprLabel} (DPR)</Text>
-              <Text style={styles.tableCol}>{formatVal(health.daughterPregnancyRate)}</Text>
             </View>
 
             <View style={[styles.tableRow, styles.altRow]}>
@@ -329,13 +356,48 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
             </View>
 
             <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ccrLabel}</Text>
-              <Text style={styles.tableCol}>{formatVal(health.cowConceptionRate)}</Text>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.betaCaseinLabel}</Text>
+              <Text style={styles.tableCol}>{health.betaCasein || 'N/A'}</Text>
             </View>
 
             <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.betaCaseinLabel}</Text>
-              <Text style={styles.tableCol}>{health.betaCasein || 'N/A'}</Text>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.mastLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.mast, '%')}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.metrLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.metr, '%')}</Text>
+            </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ketoLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.keto, '%')}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.replLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.repl, '%')}</Text>
+            </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsabLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.dsab, '%')}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.mfevLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.mfev, '%')}</Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* 3b. CDCB Calving Metrics Table [NEW] */}
+        <Card title={strings.calvingTitle} style={styles.sectionCard}>
+          <View style={styles.table}>
+            <View style={[styles.tableRow, styles.tableHeaderRow]}>
+              <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>प्रसूती घटक (Trait)</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
             </View>
 
             <View style={styles.tableRow}>
@@ -808,5 +870,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primaryDark,
     textAlign: 'center',
+  },
+  explanationBox: {
+    backgroundColor: COLORS.primaryLight,
+    borderWidth: 1,
+    borderColor: COLORS.primary + '30',
+    borderRadius: SIZES.radiusMd,
+    padding: SPACING.md,
+    marginTop: SPACING.md,
+  },
+  explanationTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: COLORS.primaryDark,
+    marginBottom: SPACING.xs,
+  },
+  explanationBullet: {
+    fontSize: 13,
+    color: COLORS.textPrimary,
+    lineHeight: 18,
+    marginVertical: 2,
+  },
+  bulletHighlight: {
+    fontWeight: 'bold',
+    color: COLORS.primary,
   },
 });

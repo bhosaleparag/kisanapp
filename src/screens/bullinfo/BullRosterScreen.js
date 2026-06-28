@@ -8,6 +8,7 @@ import { getBullsByBrand } from '../../services/bullService';
 import { useAppStore } from '../../store/useAppStore';
 import Card from '../../components/Card';
 import BullFormModal from '../../components/BullFormModal';
+import BulkEditMilkLbsModal from '../../components/BulkEditMilkLbsModal';
 
 export default function BullRosterScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
@@ -22,6 +23,7 @@ export default function BullRosterScreen({ route, navigation }) {
   const [selectedBreed, setSelectedBreed] = useState('all');
   const [breedFilterVisible, setBreedFilterVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [bulkModalVisible, setBulkModalVisible] = useState(false);
 
   const strings = STRINGS.bullInfo;
 
@@ -127,6 +129,17 @@ export default function BullRosterScreen({ route, navigation }) {
           <Text style={styles.title}>{brandName} {strings.rosterTitleSuffix}</Text>
         </View>
 
+        {/* Bulk Edit Button (Admins only, visible when bulls exist) */}
+        {isAdmin && bulls.length > 0 && (
+          <IconButton
+            icon="playlist-edit"
+            iconColor="#FFFFFF"
+            size={26}
+            onPress={() => setBulkModalVisible(true)}
+            style={styles.headerIconBtn}
+          />
+        )}
+
         {/* Dropdown Menu for Filtering */}
         <Menu
           visible={breedFilterVisible}
@@ -203,6 +216,14 @@ export default function BullRosterScreen({ route, navigation }) {
         brandName={brandName}
         onSuccess={fetchBulls}
       />
+
+      {/* Bulk Edit Milk Lbs Modal */}
+      <BulkEditMilkLbsModal
+        visible={bulkModalVisible}
+        onClose={() => setBulkModalVisible(false)}
+        bulls={bulls}
+        onSuccess={fetchBulls}
+      />
     </View>
   );
 }
@@ -238,6 +259,10 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     margin: 0,
+  },
+  headerIconBtn: {
+    margin: 0,
+    marginRight: SPACING.xs,
   },
   title: {
     fontSize: 20,
