@@ -11,6 +11,7 @@ import { bullRecordSchema } from '../utils/schemas';
 import { addBullRecord, updateBullRecord } from '../services/bullService';
 import { useAppStore } from '../store/useAppStore';
 import Input from './Input';
+import Select from './Select';
 import Button from './Button';
 
 export default function BullFormModal({
@@ -128,6 +129,8 @@ export default function BullFormModal({
         mgs: pedigree.mgs || '',
         mgd: pedigree.mgd || '',
         mggs: pedigree.mggs || '',
+        transitionRight: String(health.transitionRight ?? ''),
+        betaCasein: String(health.betaCasein ?? ''),
         evaluationDate: cdcbChart.evaluationDate || 'June 2026',
         milkLbs: String(production.milkLbs ?? ''),
         fatLbs: String(production.fatLbs ?? ''),
@@ -138,15 +141,13 @@ export default function BullFormModal({
         reliability: String(production.reliability ?? ''),
         productiveLife: String(health.productiveLife ?? ''),
         daughterPregnancyRate: String(health.daughterPregnancyRate ?? ''),
-        sireConceptionRate: String(health.sireConceptionRate ?? ''),
         heiferConceptionRate: String(health.heiferConceptionRate ?? ''),
         cowConceptionRate: String(health.cowConceptionRate ?? ''),
-        betaCasein: health.betaCasein || 'A2A2',
-        somaticCellScore: String(health.somaticCellScore ?? ''),
         sireCalvingEase: String(health.sireCalvingEase ?? ''),
         daughterCalvingEase: String(health.daughterCalvingEase ?? ''),
         sireStillbirth: String(health.sireStillbirth ?? ''),
         daughterStillbirth: String(health.daughterStillbirth ?? ''),
+        somaticCellScore: String(health.somaticCellScore ?? ''),
         mast: String(health.mast ?? ''),
         metr: String(health.metr ?? ''),
         keto: String(health.keto ?? ''),
@@ -157,6 +158,24 @@ export default function BullFormModal({
         udderComposite: String(conformation.udderComposite ?? ''),
         feetLegsComposite: String(conformation.feetLegsComposite ?? ''),
         bodyWeightComposite: String(conformation.bodyWeightComposite ?? ''),
+        stature: String(conformation.stature ?? ''),
+        strength: String(conformation.strength ?? ''),
+        bodyDepth: String(conformation.bodyDepth ?? ''),
+        dairyForm: String(conformation.dairyForm ?? ''),
+        rumpAngle: String(conformation.rumpAngle ?? ''),
+        thurlWidth: String(conformation.thurlWidth ?? ''),
+        rearLegsSideView: String(conformation.rearLegsSideView ?? ''),
+        rearLegsRearView: String(conformation.rearLegsRearView ?? ''),
+        footAngle: String(conformation.footAngle ?? ''),
+        feetLegsScore: String(conformation.feetLegsScore ?? ''),
+        foreUdderAttachment: String(conformation.foreUdderAttachment ?? ''),
+        rearUdderHeight: String(conformation.rearUdderHeight ?? ''),
+        rearUdderWidth: String(conformation.rearUdderWidth ?? ''),
+        udderCleft: String(conformation.udderCleft ?? ''),
+        udderDepth: String(conformation.udderDepth ?? ''),
+        frontTeatPlacement: String(conformation.frontTeatPlacement ?? ''),
+        rearTeatPlacement: String(conformation.rearTeatPlacement ?? ''),
+        teatLength: String(conformation.teatLength ?? ''),
       };
     }
 
@@ -165,42 +184,60 @@ export default function BullFormModal({
       naabCode: '',
       registrationNumber: '',
       tpi: '',
-      breed: '',
+      breed: 'Holstein',
       photoUrl: '',
       sire: '',
       damSire: '',
       mgs: '',
       mgd: '',
       mggs: '',
-      evaluationDate: 'June 2026',
-      milkLbs: '1000',
-      fatLbs: '50',
-      fatPercent: '0.05',
-      proteinLbs: '30',
-      proteinPercent: '0.02',
-      combinedFatProtein: '100',
-      reliability: '90',
-      productiveLife: '4.0',
-      daughterPregnancyRate: '0.0',
-      sireConceptionRate: '1.5',
-      heiferConceptionRate: '1.2',
-      cowConceptionRate: '0.5',
+      transitionRight: '3',
       betaCasein: 'A2A2',
-      somaticCellScore: '2.80',
-      sireCalvingEase: '2.0',
-      daughterCalvingEase: '2.1',
-      sireStillbirth: '5.5',
-      daughterStillbirth: '6.2',
-      mast: '2.0',
-      metr: '1.5',
-      keto: '1.5',
-      repl: '0.5',
-      dsab: '0.8',
-      mfev: '0.3',
-      ptat: '1.0',
-      udderComposite: '1.0',
-      feetLegsComposite: '1.0',
-      bodyWeightComposite: '0.85',
+      evaluationDate: '',
+      milkLbs: '',
+      fatLbs: '',
+      fatPercent: '',
+      proteinLbs: '',
+      proteinPercent: '',
+      combinedFatProtein: '',
+      reliability: '',
+      productiveLife: '',
+      daughterPregnancyRate: '',
+      heiferConceptionRate: '',
+      cowConceptionRate: '',
+      sireCalvingEase: '',
+      daughterCalvingEase: '',
+      sireStillbirth: '',
+      daughterStillbirth: '',
+      somaticCellScore: '',
+      mast: '',
+      metr: '',
+      keto: '',
+      repl: '',
+      dsab: '',
+      mfev: '',
+      ptat: '',
+      udderComposite: '',
+      feetLegsComposite: '',
+      bodyWeightComposite: '',
+      stature: '',
+      strength: '',
+      bodyDepth: '',
+      dairyForm: '',
+      rumpAngle: '',
+      thurlWidth: '',
+      rearLegsSideView: '',
+      rearLegsRearView: '',
+      footAngle: '',
+      feetLegsScore: '',
+      foreUdderAttachment: '',
+      rearUdderHeight: '',
+      rearUdderWidth: '',
+      udderCleft: '',
+      udderDepth: '',
+      frontTeatPlacement: '',
+      rearTeatPlacement: '',
+      teatLength: '',
     };
   }, [bull]);
 
@@ -498,6 +535,44 @@ export default function BullFormModal({
             )}
           />
 
+          {/* Real World Data Header */}
+          <Text style={styles.sectionHeader}>{strings.realWorldDataSection}</Text>
+
+          <Controller
+            control={control}
+            name="transitionRight"
+            render={({ field: { onChange, value } }) => (
+              <Select
+                label={strings.transitionRightLabel}
+                placeholder={strings.transitionRightPlaceholder}
+                selectedValue={value}
+                onValueChange={onChange}
+                options={[
+                  { value: '1', label: '★☆☆☆☆ (1 Star)' },
+                  { value: '2', label: '★★☆☆☆ (2 Stars)' },
+                  { value: '3', label: '★★★☆☆ (3 Stars)' },
+                  { value: '4', label: '★★★★☆ (4 Stars)' },
+                  { value: '5', label: '★★★★★ (5 Stars)' },
+                ]}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="betaCasein"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.betaCaseinLabel}
+                placeholder={strings.betaCaseinPlaceholder}
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
           {/* CDCB Stats Header */}
           <Text style={styles.sectionHeader}>{strings.cdcbStatsSection}</Text>
 
@@ -665,11 +740,11 @@ export default function BullFormModal({
 
           <Controller
             control={control}
-            name="sireConceptionRate"
+            name="heiferConceptionRate"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.scrLabel}
-                placeholder={strings.scrPlaceholder}
+                label={strings.hcrLabel}
+                placeholder={strings.hcrPlaceholder}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -692,14 +767,15 @@ export default function BullFormModal({
             )}
           />
 
-          <Text style={styles.subSectionHeader}>{strings.healthTitle}</Text>
+          <Text style={styles.subSectionHeader}>{strings.calvingTitle}</Text>
 
           <Controller
             control={control}
-            name="heiferConceptionRate"
+            name="sireCalvingEase"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.hcrLabel}
+                label={strings.sceLabel}
+                placeholder={strings.scePlaceholder}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
@@ -710,11 +786,12 @@ export default function BullFormModal({
 
           <Controller
             control={control}
-            name="betaCasein"
+            name="daughterCalvingEase"
             render={({ field: { onChange, value } }) => (
               <Input
-                label={strings.betaCaseinLabel}
-                placeholder={strings.betaCaseinPlaceholder}
+                label={strings.dceLabel}
+                placeholder={strings.dcePlaceholder}
+                keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}
                 disabled={saving}
@@ -722,6 +799,37 @@ export default function BullFormModal({
             )}
           />
 
+          <Controller
+            control={control}
+            name="sireStillbirth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.ssbLabel}
+                placeholder={strings.ssbPlaceholder}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="daughterStillbirth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.dsbLabel}
+                placeholder={strings.dsbPlaceholder}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          <Text style={styles.subSectionHeader}>{strings.healthTitle}</Text>
           <Controller
             control={control}
             name="somaticCellScore"
@@ -820,64 +928,6 @@ export default function BullFormModal({
             )}
           />
 
-          <Text style={styles.subSectionHeader}>{strings.calvingTitle}</Text>
-
-          <Controller
-            control={control}
-            name="sireCalvingEase"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.sceLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="daughterCalvingEase"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dceLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="sireStillbirth"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.ssbLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="daughterStillbirth"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dsbLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
-
           <Text style={styles.subSectionHeader}>{strings.conformationTitle}</Text>
 
           <Controller
@@ -928,6 +978,252 @@ export default function BullFormModal({
             render={({ field: { onChange, value } }) => (
               <Input
                 label={strings.bwcLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          {/* I. Body Weight Composite Traits */}
+          <Text style={styles.subSectionHeader}>{strings.statureTitle}</Text>
+          <Controller
+            control={control}
+            name="stature"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.statureLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="strength"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.strengthLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="bodyDepth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.bodyDepthLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="dairyForm"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.dairyFormLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rumpAngle"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rumpAngleLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="thurlWidth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.thurlWidthLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          {/* II. Feet & Legs Traits */}
+          <Text style={styles.subSectionHeader}>{strings.feetLegsTitle}</Text>
+          <Controller
+            control={control}
+            name="rearLegsSideView"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rearLegsSideViewLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rearLegsRearView"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rearLegsRearViewLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="footAngle"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.footAngleLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="feetLegsScore"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.feetLegsScoreLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          {/* III. Udder Composite Traits */}
+          <Text style={styles.subSectionHeader}>{strings.udderTitle}</Text>
+          <Controller
+            control={control}
+            name="foreUdderAttachment"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.foreUdderAttachmentLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rearUdderHeight"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rearUdderHeightLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rearUdderWidth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rearUdderWidthLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="udderCleft"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.udderCleftLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="udderDepth"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.udderDepthLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+
+          {/* IV. Teat Placement Traits */}
+          <Text style={styles.subSectionHeader}>{strings.teatPlacementTitle}</Text>
+          <Controller
+            control={control}
+            name="frontTeatPlacement"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.frontTeatPlacementLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="rearTeatPlacement"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.rearTeatPlacementLabel}
+                keyboardType="numeric"
+                value={value}
+                onChangeText={onChange}
+                disabled={saving}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="teatLength"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                label={strings.teatLengthLabel}
                 keyboardType="numeric"
                 value={value}
                 onChangeText={onChange}

@@ -214,14 +214,14 @@ export const bullRecordSchema = z.object({
     .or(z.literal(''))
     .optional(),
   photoUrls: z.array(z.string()).optional(),
-  
+
   // Pedigree
   sire: z.string().optional(),
   damSire: z.string().optional(),
   mgs: z.string().optional(),
   mgd: z.string().optional(),
   mggs: z.string().optional(),
-  
+
   // Evaluation Date
   evaluationDate: z.string().optional(),
 
@@ -233,28 +233,47 @@ export const bullRecordSchema = z.object({
   proteinPercent: z.string().optional(),
   combinedFatProtein: z.string().optional(),
   reliability: z.string().optional(),
-  
+
   productiveLife: z.string().optional(),
   daughterPregnancyRate: z.string().optional(),
   sireConceptionRate: z.string().optional(),
   heiferConceptionRate: z.string().optional(),
   cowConceptionRate: z.string().optional(),
   betaCasein: z.string().optional(),
+  transitionRight: z.string().optional(),
   somaticCellScore: z.string().optional(),
   sireCalvingEase: z.string().optional(),
   daughterCalvingEase: z.string().optional(),
   sireStillbirth: z.string().optional(),
   daughterStillbirth: z.string().optional(),
-  
+
   mast: z.string().optional(),
   metr: z.string().optional(),
   keto: z.string().optional(),
   repl: z.string().optional(),
   dsab: z.string().optional(),
   mfev: z.string().optional(),
-  
+
   ptat: z.string().optional(),
   udderComposite: z.string().optional(),
   feetLegsComposite: z.string().optional(),
   bodyWeightComposite: z.string().optional(),
+  stature: z.string().optional(),
+  strength: z.string().optional(),
+  bodyDepth: z.string().optional(),
+  dairyForm: z.string().optional(),
+  rumpAngle: z.string().optional(),
+  thurlWidth: z.string().optional(),
+  rearLegsSideView: z.string().optional(),
+  rearLegsRearView: z.string().optional(),
+  footAngle: z.string().optional(),
+  feetLegsScore: z.string().optional(),
+  foreUdderAttachment: z.string().optional(),
+  rearUdderHeight: z.string().optional(),
+  rearUdderWidth: z.string().optional(),
+  udderCleft: z.string().optional(),
+  udderDepth: z.string().optional(),
+  frontTeatPlacement: z.string().optional(),
+  rearTeatPlacement: z.string().optional(),
+  teatLength: z.string().optional(),
 });

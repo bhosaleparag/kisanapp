@@ -65,6 +65,21 @@ const cleanPedigreeName = (name) => {
   return filteredWords.join('');
 };
 
+const renderStars = (rating) => {
+  const stars = [];
+  const activeColor = '#FF6B8B'; // Rose/Pink color matching the screenshot
+  const inactiveColor = '#E0E0E0'; // Light grey/slate
+  const numRating = parseInt(rating) || 0;
+  for (let i = 1; i <= 5; i++) {
+    stars.push(
+      <Text key={i} style={{ fontSize: 20, color: i <= numRating ? activeColor : inactiveColor, marginRight: 2 }}>
+        ★
+      </Text>
+    );
+  }
+  return <View style={{ flexDirection: 'row' }}>{stars}</View>;
+};
+
 export default function CdcbDataSheetScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { bull } = route.params || {};
@@ -114,6 +129,101 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
   const production = cdcbChart.production || {};
   const health = cdcbChart.health || {};
   const conformation = cdcbChart.conformation || {};
+
+  const statureTraits = [
+    { key: 'stature', label: strings.statureLabel, val: conformation.stature || 0 },
+    { key: 'strength', label: strings.strengthLabel, val: conformation.strength || 0 },
+    { key: 'bodyDepth', label: strings.bodyDepthLabel, val: conformation.bodyDepth || 0 },
+    { key: 'dairyForm', label: strings.dairyFormLabel, val: conformation.dairyForm || 0 },
+    { key: 'rumpAngle', label: strings.rumpAngleLabel, val: conformation.rumpAngle || 0 },
+    { key: 'thurlWidth', label: strings.thurlWidthLabel, val: conformation.thurlWidth || 0 }
+  ];
+
+  const feetLegsTraits = [
+    { key: 'rearLegsSideView', label: strings.rearLegsSideViewLabel, val: conformation.rearLegsSideView || 0 },
+    { key: 'rearLegsRearView', label: strings.rearLegsRearViewLabel, val: conformation.rearLegsRearView || 0 },
+    { key: 'footAngle', label: strings.footAngleLabel, val: conformation.footAngle || 0 },
+    { key: 'feetLegsScore', label: strings.feetLegsScoreLabel, val: conformation.feetLegsScore || 0 }
+  ];
+
+  const udderTraits = [
+    { key: 'foreUdderAttachment', label: strings.foreUdderAttachmentLabel, val: conformation.foreUdderAttachment || 0 },
+    { key: 'rearUdderHeight', label: strings.rearUdderHeightLabel, val: conformation.rearUdderHeight || 0 },
+    { key: 'rearUdderWidth', label: strings.rearUdderWidthLabel, val: conformation.rearUdderWidth || 0 },
+    { key: 'udderCleft', label: strings.udderCleftLabel, val: conformation.udderCleft || 0 },
+    { key: 'udderDepth', label: strings.udderDepthLabel, val: conformation.udderDepth || 0 }
+  ];
+
+  const teatTraits = [
+    { key: 'frontTeatPlacement', label: strings.frontTeatPlacementLabel, val: conformation.frontTeatPlacement || 0 },
+    { key: 'rearTeatPlacement', label: strings.rearTeatPlacementLabel, val: conformation.rearTeatPlacement || 0 },
+    { key: 'teatLength', label: strings.teatLengthLabel, val: conformation.teatLength || 0 }
+  ];
+
+  const renderCdcbSubGraph = (title, traits) => {
+    return (
+      <Card title={title} style={styles.sectionCard}>
+        <View style={styles.graphContainer}>
+          {/* Graph Header Scale */}
+          <View style={styles.graphHeaderRow}>
+            <View style={styles.subGraphLabelColHeader} />
+            <View style={styles.graphChartColHeader}>
+              <View style={styles.scaleMarkWrap0}><Text style={styles.scaleMarkText}>-2</Text></View>
+              <View style={styles.scaleMarkWrap25}><Text style={styles.scaleMarkText}>-1</Text></View>
+              <View style={styles.scaleMarkWrap50}><Text style={styles.scaleMarkText}>0</Text></View>
+              <View style={styles.scaleMarkWrap75}><Text style={styles.scaleMarkText}>1</Text></View>
+              <View style={styles.scaleMarkWrap100}><Text style={styles.scaleMarkText}>2</Text></View>
+            </View>
+            <View style={styles.graphValueColHeader} />
+          </View>
+
+          {traits.map((trait) => {
+            const numVal = parseFloat(trait.val) || 0;
+            const maxScale = 2.0;
+            const percentage = Math.min((Math.abs(numVal) / maxScale) * 50, 50);
+            const isPositive = numVal >= 0;
+
+            return (
+              <View key={trait.key} style={styles.graphRow}>
+                {/* Left Abbreviation Column */}
+                <View style={styles.subGraphLabelCol}>
+                  <Text style={styles.subGraphLabelText} numberOfLines={2}>{trait.label}</Text>
+                </View>
+
+                {/* Center Chart area with grid lines and horizontal bar */}
+                <View style={styles.graphChartCol}>
+                  {/* Vertical Grid Lines */}
+                  <View style={[styles.gridLine, { left: '0%' }]} />
+                  <View style={[styles.gridLine, { left: '25%' }]} />
+                  <View style={[styles.gridLine, styles.gridLineCenter]} />
+                  <View style={[styles.gridLine, { left: '75%' }]} />
+                  <View style={[styles.gridLine, { left: '100%' }]} />
+
+                  {/* Bar */}
+                  {numVal !== 0 && (
+                    <View
+                      style={[
+                        styles.graphBar,
+                        isPositive ? { left: '50%' } : { right: '50%' },
+                        { width: `${percentage}%` }
+                      ]}
+                    />
+                  )}
+                </View>
+
+                {/* Right Value Column */}
+                <View style={styles.graphValueCol}>
+                  <Text style={styles.graphValueText}>
+                    {numVal.toFixed(2)}
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </Card>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -211,13 +321,6 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
                 <Text style={[styles.badgeVal, styles.tpiValText]}>+{currentBull.tpi}</Text>
               </View>
             )}
-
-            {health.betaCasein && (
-              <View style={styles.highlightBadge}>
-                <Text style={styles.badgeLabel}>Beta Casein</Text>
-                <Text style={styles.badgeVal}>{health.betaCasein}</Text>
-              </View>
-            )}
           </View>
         </View>
 
@@ -271,6 +374,32 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
           </View>
         </Card>
 
+        {/* Real World Data Section */}
+        <Card title='वास्तववादी डेटा (Real World Data)' style={styles.sectionCard}>
+          <View style={styles.pedigreeGrid}>
+            <View style={styles.pedigreeRow}>
+              <Text style={[styles.pedigreeLabel, { flex: 3, fontWeight: '500', color: COLORS.textPrimary }]}>{strings.transitionRightLabel}</Text>
+              <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center' }}>
+                {renderStars(health.transitionRight || 0)}
+              </View>
+            </View>
+
+            <View style={styles.pedigreeRow}>
+              <Text style={[styles.pedigreeLabel, { flex: 3, fontWeight: '500', color: COLORS.textPrimary }]}>{strings.betaCaseinLabel}</Text>
+              <Text style={[styles.pedigreeValue, { flex: 2, textAlign: 'left', fontWeight: '500', color: COLORS.textSecondary }]}>
+                {health.betaCasein || 'N/A'}
+              </Text>
+            </View>
+
+            <View style={styles.pedigreeRow}>
+              <Text style={[styles.pedigreeLabel, { flex: 3, fontWeight: '500', color: COLORS.textPrimary }]}>{strings.cdcbLabel}</Text>
+              <Text style={[styles.pedigreeValue, { flex: 2, textAlign: 'left', fontWeight: '500', color: COLORS.textSecondary }]}>
+                {cdcbChart.evaluationDate || 'N/A'}
+              </Text>
+            </View>
+          </View>
+        </Card>
+
         {/* 2. CDCB Production Metrics Table */}
         <Card title={strings.productionTitle} style={styles.sectionCard}>
           <View style={styles.table}>
@@ -312,7 +441,7 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
           </View>
         </Card>
 
-        {/* 2b. CDCB Fertility Metrics Table [NEW] */}
+        {/* 2b. CDCB Fertility Metrics Table */}
         <Card title={strings.fertilityTitle} style={styles.sectionCard}>
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeaderRow]}>
@@ -326,13 +455,43 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
             </View>
 
             <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scrLabel}</Text>
-              <Text style={styles.tableCol}>{formatVal(health.sireConceptionRate)}</Text>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.hcrLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.heiferConceptionRate)}</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ccrLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.cowConceptionRate)}</Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* 2c. CDCB Calving Traits Table */}
+        <Card title={strings.calvingTitle} style={styles.sectionCard}>
+          <View style={styles.table}>
+            <View style={[styles.tableRow, styles.tableHeaderRow]}>
+              <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>{strings.calvingTraitHeader}</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>{strings.valueHeader}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.sceLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.sireCalvingEase, '%')}</Text>
+            </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dceLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.daughterCalvingEase, '%')}</Text>
+            </View>
+
+            <View style={styles.tableRow}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ssbLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.sireStillbirth, '%')}</Text>
+            </View>
+
+            <View style={[styles.tableRow, styles.altRow]}>
+              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsbLabel}</Text>
+              <Text style={styles.tableCol}>{formatVal(health.daughterStillbirth, '%')}</Text>
             </View>
           </View>
         </Card>
@@ -345,19 +504,10 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
             </View>
 
+
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scsLabel}</Text>
               <Text style={styles.tableCol}>{health.somaticCellScore || 0}</Text>
-            </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.hcrLabel}</Text>
-              <Text style={styles.tableCol}>{formatVal(health.heiferConceptionRate)}</Text>
-            </View>
-
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.betaCaseinLabel}</Text>
-              <Text style={styles.tableCol}>{health.betaCasein || 'N/A'}</Text>
             </View>
 
             <View style={[styles.tableRow, styles.altRow]}>
@@ -365,59 +515,29 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
               <Text style={styles.tableCol}>{formatVal(health.mast, '%')}</Text>
             </View>
 
-            <View style={styles.tableRow}>
+            <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.metrLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.metr, '%')}</Text>
             </View>
 
-            <View style={[styles.tableRow, styles.altRow]}>
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ketoLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.keto, '%')}</Text>
             </View>
 
-            <View style={styles.tableRow}>
+            <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.replLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.repl, '%')}</Text>
             </View>
 
-            <View style={[styles.tableRow, styles.altRow]}>
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsabLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.dsab, '%')}</Text>
             </View>
 
-            <View style={styles.tableRow}>
+            <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.mfevLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.mfev, '%')}</Text>
-            </View>
-          </View>
-        </Card>
-
-        {/* 3b. CDCB Calving Metrics Table [NEW] */}
-        <Card title={strings.calvingTitle} style={styles.sectionCard}>
-          <View style={styles.table}>
-            <View style={[styles.tableRow, styles.tableHeaderRow]}>
-              <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>प्रसूती घटक (Trait)</Text>
-              <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
-            </View>
-
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.sceLabel}</Text>
-              <Text style={styles.tableCol}>{health.sireCalvingEase || 0}%</Text>
-            </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dceLabel}</Text>
-              <Text style={styles.tableCol}>{health.daughterCalvingEase || 0}%</Text>
-            </View>
-
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ssbLabel}</Text>
-              <Text style={styles.tableCol}>{health.sireStillbirth || 0}%</Text>
-            </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
-              <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsbLabel}</Text>
-              <Text style={styles.tableCol}>{health.daughterStillbirth || 0}%</Text>
             </View>
           </View>
         </Card>
@@ -488,6 +608,11 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
             })}
           </View>
         </Card>
+
+        {renderCdcbSubGraph(strings.statureTitle, statureTraits)}
+        {renderCdcbSubGraph(strings.feetLegsTitle, feetLegsTraits)}
+        {renderCdcbSubGraph(strings.udderTitle, udderTraits)}
+        {renderCdcbSubGraph(strings.teatPlacementTitle, teatTraits)}
       </ScrollView>
 
       {/* Edit Bull Modal Form */}
@@ -816,6 +941,19 @@ const styles = StyleSheet.create({
   },
   graphLabelText: {
     fontSize: 13,
+    fontWeight: 'bold',
+    color: COLORS.textPrimary,
+  },
+  subGraphLabelColHeader: {
+    width: 130,
+  },
+  subGraphLabelCol: {
+    width: 130,
+    paddingLeft: SPACING.xs,
+    justifyContent: 'center',
+  },
+  subGraphLabelText: {
+    fontSize: 10.5,
     fontWeight: 'bold',
     color: COLORS.textPrimary,
   },
