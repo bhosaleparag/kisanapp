@@ -315,6 +315,7 @@ export const STRINGS = {
     mggsPlaceholder: "उदा. Oman MGGS",
     productionTitle: "CDCB उत्पादन आकडेवारी",
     milkLbsLabel: "दूध वाढ (Milk Lbs)",
+    milkKgLabel: "दूध वाढ (Milk Kg)",
     fatLbsLabel: "फॅट वाढ (Fat Lbs)",
     fatPercentLabel: "फॅट टक्केवारी (%)",
     proteinLbsLabel: "प्रोटिन वाढ (Protein Lbs)",

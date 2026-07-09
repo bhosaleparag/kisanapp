@@ -135,10 +135,8 @@ export default function BullFormModal({
         milkLbs: String(production.milkLbs ?? ''),
         milkLbsReliability: String(production.milkLbsReliability ?? ''),
         fatLbs: String(production.fatLbs ?? ''),
-        fatLbsReliability: String(production.fatLbsReliability ?? ''),
         fatPercent: String(production.fatPercent ?? ''),
         proteinLbs: String(production.proteinLbs ?? ''),
-        proteinLbsReliability: String(production.proteinLbsReliability ?? ''),
         proteinPercent: String(production.proteinPercent ?? ''),
         combinedFatProtein: String(production.combinedFatProtein ?? ''),
         combinedFatProteinReliability: String(production.combinedFatProteinReliability ?? ''),
@@ -215,10 +213,8 @@ export default function BullFormModal({
       milkLbs: '',
       milkLbsReliability: '',
       fatLbs: '',
-      fatLbsReliability: '',
       fatPercent: '',
       proteinLbs: '',
-      proteinLbsReliability: '',
       proteinPercent: '',
       combinedFatProtein: '',
       combinedFatProteinReliability: '',
@@ -693,10 +689,10 @@ export default function BullFormModal({
             />
             <Controller
               control={control}
-              name="fatLbsReliability"
+              name="fatPercent"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label={strings.reliabilityAbbr}
+                  label={strings.fatPercentLabel}
                   keyboardType="numeric"
                   value={value}
                   onChangeText={onChange}
@@ -706,20 +702,6 @@ export default function BullFormModal({
               )}
             />
           </View>
-
-          <Controller
-            control={control}
-            name="fatPercent"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.fatPercentLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
 
           <View style={styles.rowContainer}>
             <Controller
@@ -738,10 +720,10 @@ export default function BullFormModal({
             />
             <Controller
               control={control}
-              name="proteinLbsReliability"
+              name="proteinPercent"
               render={({ field: { onChange, value } }) => (
                 <Input
-                  label={strings.reliabilityAbbr}
+                  label={strings.proteinPercentLabel}
                   keyboardType="numeric"
                   value={value}
                   onChangeText={onChange}
@@ -751,20 +733,6 @@ export default function BullFormModal({
               )}
             />
           </View>
-
-          <Controller
-            control={control}
-            name="proteinPercent"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.proteinPercentLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
 
           <View style={styles.rowContainer}>
             <Controller
