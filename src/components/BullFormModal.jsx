@@ -133,27 +133,45 @@ export default function BullFormModal({
         betaCasein: String(health.betaCasein ?? ''),
         evaluationDate: cdcbChart.evaluationDate || 'June 2026',
         milkLbs: String(production.milkLbs ?? ''),
+        milkLbsReliability: String(production.milkLbsReliability ?? ''),
         fatLbs: String(production.fatLbs ?? ''),
+        fatLbsReliability: String(production.fatLbsReliability ?? ''),
         fatPercent: String(production.fatPercent ?? ''),
         proteinLbs: String(production.proteinLbs ?? ''),
+        proteinLbsReliability: String(production.proteinLbsReliability ?? ''),
         proteinPercent: String(production.proteinPercent ?? ''),
         combinedFatProtein: String(production.combinedFatProtein ?? ''),
-        reliability: String(production.reliability ?? ''),
+        combinedFatProteinReliability: String(production.combinedFatProteinReliability ?? ''),
         productiveLife: String(health.productiveLife ?? ''),
+        productiveLifeReliability: String(health.productiveLifeReliability ?? ''),
         daughterPregnancyRate: String(health.daughterPregnancyRate ?? ''),
+        daughterPregnancyRateReliability: String(health.daughterPregnancyRateReliability ?? ''),
         heiferConceptionRate: String(health.heiferConceptionRate ?? ''),
+        heiferConceptionRateReliability: String(health.heiferConceptionRateReliability ?? ''),
         cowConceptionRate: String(health.cowConceptionRate ?? ''),
+        cowConceptionRateReliability: String(health.cowConceptionRateReliability ?? ''),
         sireCalvingEase: String(health.sireCalvingEase ?? ''),
+        sireCalvingEaseReliability: String(health.sireCalvingEaseReliability ?? ''),
         daughterCalvingEase: String(health.daughterCalvingEase ?? ''),
+        daughterCalvingEaseReliability: String(health.daughterCalvingEaseReliability ?? ''),
         sireStillbirth: String(health.sireStillbirth ?? ''),
+        sireStillbirthReliability: String(health.sireStillbirthReliability ?? ''),
         daughterStillbirth: String(health.daughterStillbirth ?? ''),
+        daughterStillbirthReliability: String(health.daughterStillbirthReliability ?? ''),
         somaticCellScore: String(health.somaticCellScore ?? ''),
+        somaticCellScoreReliability: String(health.somaticCellScoreReliability ?? ''),
         mast: String(health.mast ?? ''),
+        mastReliability: String(health.mastReliability ?? ''),
         metr: String(health.metr ?? ''),
+        metrReliability: String(health.metrReliability ?? ''),
         keto: String(health.keto ?? ''),
+        ketoReliability: String(health.ketoReliability ?? ''),
         repl: String(health.repl ?? ''),
+        replReliability: String(health.replReliability ?? ''),
         dsab: String(health.dsab ?? ''),
+        dsabReliability: String(health.dsabReliability ?? ''),
         mfev: String(health.mfev ?? ''),
+        mfevReliability: String(health.mfevReliability ?? ''),
         ptat: String(conformation.ptat ?? ''),
         udderComposite: String(conformation.udderComposite ?? ''),
         feetLegsComposite: String(conformation.feetLegsComposite ?? ''),
@@ -195,27 +213,45 @@ export default function BullFormModal({
       betaCasein: 'A2A2',
       evaluationDate: '',
       milkLbs: '',
+      milkLbsReliability: '',
       fatLbs: '',
+      fatLbsReliability: '',
       fatPercent: '',
       proteinLbs: '',
+      proteinLbsReliability: '',
       proteinPercent: '',
       combinedFatProtein: '',
-      reliability: '',
+      combinedFatProteinReliability: '',
       productiveLife: '',
+      productiveLifeReliability: '',
       daughterPregnancyRate: '',
+      daughterPregnancyRateReliability: '',
       heiferConceptionRate: '',
+      heiferConceptionRateReliability: '',
       cowConceptionRate: '',
+      cowConceptionRateReliability: '',
       sireCalvingEase: '',
+      sireCalvingEaseReliability: '',
       daughterCalvingEase: '',
+      daughterCalvingEaseReliability: '',
       sireStillbirth: '',
+      sireStillbirthReliability: '',
       daughterStillbirth: '',
+      daughterStillbirthReliability: '',
       somaticCellScore: '',
+      somaticCellScoreReliability: '',
       mast: '',
+      mastReliability: '',
       metr: '',
+      metrReliability: '',
       keto: '',
+      ketoReliability: '',
       repl: '',
+      replReliability: '',
       dsab: '',
+      dsabReliability: '',
       mfev: '',
+      mfevReliability: '',
       ptat: '',
       udderComposite: '',
       feetLegsComposite: '',
@@ -609,33 +645,67 @@ export default function BullFormModal({
 
           <Text style={styles.subSectionHeader}>{strings.productionTitle}</Text>
 
-          <Controller
-            control={control}
-            name="milkLbs"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.milkLbsLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="milkLbs"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.milkLbsLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="milkLbsReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="fatLbs"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.fatLbsLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="fatLbs"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.fatLbsLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="fatLbsReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Controller
             control={control}
@@ -651,19 +721,36 @@ export default function BullFormModal({
             )}
           />
 
-          <Controller
-            control={control}
-            name="proteinLbs"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.proteinLbsLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="proteinLbs"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.proteinLbsLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="proteinLbsReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Controller
             control={control}
@@ -679,254 +766,513 @@ export default function BullFormModal({
             )}
           />
 
-          <Controller
-            control={control}
-            name="combinedFatProtein"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.combinedFatProteinLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                placeholder={strings.combinedFatProteinPlaceholder}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="combinedFatProtein"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.combinedFatProteinLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  placeholder={strings.combinedFatProteinPlaceholder}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="combinedFatProteinReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="productiveLife"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.productiveLifeLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="reliability"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.reliabilityLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="productiveLife"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.productiveLifeLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="productiveLifeReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Text style={styles.subSectionHeader}>{strings.fertilityTitle}</Text>
 
-          <Controller
-            control={control}
-            name="daughterPregnancyRate"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dprLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="daughterPregnancyRate"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.dprLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="daughterPregnancyRateReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="heiferConceptionRate"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.hcrLabel}
-                placeholder={strings.hcrPlaceholder}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="heiferConceptionRate"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.hcrLabel}
+                  placeholder={strings.hcrPlaceholder}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="heiferConceptionRateReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="cowConceptionRate"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.ccrLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="cowConceptionRate"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.ccrLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="cowConceptionRateReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Text style={styles.subSectionHeader}>{strings.calvingTitle}</Text>
 
-          <Controller
-            control={control}
-            name="sireCalvingEase"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.sceLabel}
-                placeholder={strings.scePlaceholder}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="sireCalvingEase"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.sceLabel}
+                  placeholder={strings.scePlaceholder}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="sireCalvingEaseReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="daughterCalvingEase"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dceLabel}
-                placeholder={strings.dcePlaceholder}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="daughterCalvingEase"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.dceLabel}
+                  placeholder={strings.dcePlaceholder}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="daughterCalvingEaseReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="sireStillbirth"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.ssbLabel}
-                placeholder={strings.ssbPlaceholder}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="sireStillbirth"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.ssbLabel}
+                  placeholder={strings.ssbPlaceholder}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="sireStillbirthReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="daughterStillbirth"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dsbLabel}
-                placeholder={strings.dsbPlaceholder}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="daughterStillbirth"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.dsbLabel}
+                  placeholder={strings.dsbPlaceholder}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="daughterStillbirthReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Text style={styles.subSectionHeader}>{strings.healthTitle}</Text>
-          <Controller
-            control={control}
-            name="somaticCellScore"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.scsLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
 
-          <Controller
-            control={control}
-            name="mast"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.mastLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="somaticCellScore"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.scsLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="somaticCellScoreReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="metr"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.metrLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="mast"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.mastLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="mastReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="keto"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.ketoLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="metr"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.metrLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="metrReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="repl"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.replLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="keto"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.ketoLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="ketoReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="dsab"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.dsabLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="repl"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.replLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="replReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
-          <Controller
-            control={control}
-            name="mfev"
-            render={({ field: { onChange, value } }) => (
-              <Input
-                label={strings.mfevLabel}
-                keyboardType="numeric"
-                value={value}
-                onChangeText={onChange}
-                disabled={saving}
-              />
-            )}
-          />
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="dsab"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.dsabLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="dsabReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
+
+          <View style={styles.rowContainer}>
+            <Controller
+              control={control}
+              name="mfev"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.mfevLabel}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.leftField}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="mfevReliability"
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  label={strings.reliabilityAbbr}
+                  keyboardType="numeric"
+                  value={value}
+                  onChangeText={onChange}
+                  disabled={saving}
+                  containerStyle={styles.rightField}
+                />
+              )}
+            />
+          </View>
 
           <Text style={styles.subSectionHeader}>{strings.conformationTitle}</Text>
 
@@ -1344,5 +1690,17 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: SPACING.lg,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  leftField: {
+    width: '68%',
+  },
+  rightField: {
+    width: '30%',
   },
 });

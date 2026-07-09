@@ -19,10 +19,11 @@ export default function Input({
   leftIcon,
   rightIcon,
   style = {},
+  containerStyle = {},
   ...props
 }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       <TextInput
         mode="outlined"
         label={label}

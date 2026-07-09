@@ -408,136 +408,153 @@ export default function CdcbDataSheetScreen({ route, navigation }) {
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>Reliability</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.milkLbsLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(production.milkLbs, ' Lbs')}</Text>
-              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+              <Text style={styles.tableCol}>{production.milkLbsReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.fatLbsLabel} / %</Text>
               <Text style={styles.tableCol}>{formatVal(production.fatLbs, ' Lbs')} / {formatVal(production.fatPercent, '%')}</Text>
-              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+              <Text style={styles.tableCol}>{production.fatLbsReliability || 0}%</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.proteinLbsLabel} / %</Text>
               <Text style={styles.tableCol}>{formatVal(production.proteinLbs, ' Lbs')} / {formatVal(production.proteinPercent, '%')}</Text>
-              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+              <Text style={styles.tableCol}>{production.proteinLbsReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.combinedFatProteinLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(production.combinedFatProtein, ' Lbs')}</Text>
-              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+              <Text style={styles.tableCol}>{production.combinedFatProteinReliability || 0}%</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.productiveLifeLabel} (PL)</Text>
               <Text style={styles.tableCol}>{formatVal(health.productiveLife)}</Text>
-              <Text style={styles.tableCol}>{production.reliability || 0}%</Text>
+              <Text style={styles.tableCol}>{health.productiveLifeReliability || 0}%</Text>
             </View>
           </View>
         </Card>
-
+ 
         {/* 2b. CDCB Fertility Metrics Table */}
         <Card title={strings.fertilityTitle} style={styles.sectionCard}>
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeaderRow]}>
               <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>प्रजनन घटक (Trait)</Text>
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>Reliability</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dprLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.daughterPregnancyRate)}</Text>
+              <Text style={styles.tableCol}>{health.daughterPregnancyRateReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.hcrLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.heiferConceptionRate)}</Text>
+              <Text style={styles.tableCol}>{health.heiferConceptionRateReliability || 0}%</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ccrLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.cowConceptionRate)}</Text>
+              <Text style={styles.tableCol}>{health.cowConceptionRateReliability || 0}%</Text>
             </View>
           </View>
         </Card>
-
+ 
         {/* 2c. CDCB Calving Traits Table */}
         <Card title={strings.calvingTitle} style={styles.sectionCard}>
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeaderRow]}>
               <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>{strings.calvingTraitHeader}</Text>
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>{strings.valueHeader}</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>Reliability</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.sceLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.sireCalvingEase, '%')}</Text>
+              <Text style={styles.tableCol}>{health.sireCalvingEaseReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dceLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.daughterCalvingEase, '%')}</Text>
+              <Text style={styles.tableCol}>{health.daughterCalvingEaseReliability || 0}%</Text>
             </View>
-
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ssbLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.sireStillbirth, '%')}</Text>
+              <Text style={styles.tableCol}>{health.sireStillbirthReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsbLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.daughterStillbirth, '%')}</Text>
+              <Text style={styles.tableCol}>{health.daughterStillbirthReliability || 0}%</Text>
             </View>
           </View>
         </Card>
-
+ 
         {/* 3. CDCB Health Metrics Table */}
         <Card title={strings.healthTitle} style={styles.sectionCard}>
           <View style={styles.table}>
             <View style={[styles.tableRow, styles.tableHeaderRow]}>
               <Text style={[styles.tableCol, styles.tableHeaderCol, { flex: 2 }]}>आरोग्य घटक (Trait)</Text>
               <Text style={[styles.tableCol, styles.tableHeaderCol]}>मूल्य (Value)</Text>
+              <Text style={[styles.tableCol, styles.tableHeaderCol]}>Reliability</Text>
             </View>
-
-
+ 
+ 
             <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.scsLabel}</Text>
               <Text style={styles.tableCol}>{health.somaticCellScore || 0}</Text>
+              <Text style={styles.tableCol}>{health.somaticCellScoreReliability || 0}%</Text>
             </View>
-
+ 
             <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.mastLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.mast, '%')}</Text>
+              <Text style={styles.tableCol}>{health.mastReliability || 0}%</Text>
             </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
+ 
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.metrLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.metr, '%')}</Text>
+              <Text style={styles.tableCol}>{health.metrReliability || 0}%</Text>
             </View>
-
-            <View style={styles.tableRow}>
+ 
+            <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.ketoLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.keto, '%')}</Text>
+              <Text style={styles.tableCol}>{health.ketoReliability || 0}%</Text>
             </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
+ 
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.replLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.repl, '%')}</Text>
+              <Text style={styles.tableCol}>{health.replReliability || 0}%</Text>
             </View>
-
-            <View style={styles.tableRow}>
+ 
+            <View style={[styles.tableRow, styles.altRow]}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.dsabLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.dsab, '%')}</Text>
+              <Text style={styles.tableCol}>{health.dsabReliability || 0}%</Text>
             </View>
-
-            <View style={[styles.tableRow, styles.altRow]}>
+ 
+            <View style={styles.tableRow}>
               <Text style={[styles.tableCol, { flex: 2 }]}>{strings.mfevLabel}</Text>
               <Text style={styles.tableCol}>{formatVal(health.mfev, '%')}</Text>
+              <Text style={styles.tableCol}>{health.mfevReliability || 0}%</Text>
             </View>
           </View>
         </Card>

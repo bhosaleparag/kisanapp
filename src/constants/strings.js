@@ -321,7 +321,7 @@ export const STRINGS = {
     proteinPercentLabel: "प्रोटिन टक्केवारी (%)",
     combinedFatProteinLabel: "एकूण फॅट व प्रोटीन (CFP)",
     combinedFatProteinPlaceholder: "उदा. १२०",
-    reliabilityLabel: "विश्वासार्हता (% Reliability)",
+    reliabilityAbbr: "Rel (%)",
     fertilityTitle: "गर्भधारणा व प्रजनन (Fertility)",
     calvingTitle: "विण्याचे गुणधर्म (Calving Traits)",
     calvingTraitHeader: "विण्याचे गुणधर्म (Trait)",
