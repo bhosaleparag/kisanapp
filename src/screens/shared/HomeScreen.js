@@ -66,6 +66,16 @@ export default function HomeScreen({ navigation }) {
 
         {/* Quick Navigate Cards Grid */}
         <View style={styles.quickLinksGrid}>
+          {/* Marketplace shortcut */}
+          <Card
+            title={STRINGS.nav.marketplace}
+            subtitle={STRINGS.marketplace.buySell}
+            onPress={() => navigateToTab('Marketplace')}
+            style={styles.gridCard}
+          >
+            <Text style={styles.cardInfo}>ओला, सुका चारा, मुरघास व इतर शेती साहित्य खरेदी किंवा विक्री करा.</Text>
+          </Card>
+
           {/* Videos shortcut */}
           <Card
             title={STRINGS.nav.videos}

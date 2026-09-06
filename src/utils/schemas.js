@@ -84,6 +84,58 @@ export const marketplaceSchema = z.object({
     .optional(),
 });
 
+// 3b. Specialized Fodder (चारा) Buying-Selling Listing Schema
+export const fodderListingSchema = z.object({
+  photos: z
+    .array(z.string())
+    .min(1, { message: 'किमान १ फोटो अपलोड करणे आवश्यक आहे.' })
+    .max(5, { message: 'कमाल ५ फोटो अपलोड करू शकता.' }),
+  farmerName: z
+    .string()
+    .min(2, { message: 'शेतकऱ्याचे नाव किमान २ अक्षरी असावे.' }),
+  callingNumber: z
+    .string()
+    .min(1, { message: 'कॉलिंग मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी मोबाईल नंबर टाका.' }),
+  whatsAppNumber: z
+    .string()
+    .min(1, { message: 'व्हॉट्सॲप मोबाईल नंबर आवश्यक आहे.' })
+    .regex(/^[0-9]{10}$/, { message: 'कृपया अचूक १० अंकी व्हॉट्सॲप नंबर टाका.' }),
+  district: z
+    .string()
+    .min(1, { message: 'कृपया जिल्हा निवडा.' }),
+  taluka: z
+    .string()
+    .min(1, { message: 'कृपया तालुका निवडा.' }),
+  village: z
+    .string()
+    .min(1, { message: 'कृपया गाव प्रविष्ट करा.' }),
+  category: z.enum(['green', 'dry', 'silage'], {
+    errorMap: () => ({ message: 'कृपया चाऱ्याचा प्रकार निवडा (ओला/सुका/मुरघास).' }),
+  }),
+  subType: z
+    .string()
+    .min(1, { message: 'कृपया चाऱ्याचे पीक/प्रकार निवडा.' }),
+  area: z.string().optional(),
+  weight: z.string().optional(),
+  price: z
+    .string()
+    .min(1, { message: 'दर / रक्कम प्रविष्ट करणे आवश्यक आहे.' })
+    .transform((val) => parseFloat(val))
+    .refine((val) => !isNaN(val) && val > 0, {
+      message: 'दर शून्यापेक्षा जास्त असावा.',
+    }),
+  unit: z
+    .string()
+    .min(1, { message: 'कृपया प्रति एकक निवडा.' }),
+  packingType: z.string().optional(),
+  remarks: z
+    .string()
+    .max(500, { message: 'इतर माहिती ५०० अक्षरांपेक्षा जास्त नसावी.' })
+    .optional(),
+});
+
+
 // 4. Video Guidance Tutorial Schema
 export const videoSchema = z.object({
   id: z.string().optional(),

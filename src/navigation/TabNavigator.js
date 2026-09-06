@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants/theme';
 import { STRINGS } from '../constants/strings';
 import HomeScreen from '../screens/shared/HomeScreen';
+import MarketplaceScreen from '../screens/marketplace/MarketplaceScreen';
 import VideosScreen from '../screens/videos/VideosScreen';
 import BullInfoNavigator from './BullInfoNavigator';
 
@@ -24,6 +25,9 @@ export default function TabNavigator() {
           switch (route.name) {
             case 'Home':
               iconName = 'home';
+              break;
+            case 'Marketplace':
+              iconName = 'storefront';
               break;
             case 'Videos':
               iconName = 'play-box';
@@ -92,6 +96,14 @@ export default function TabNavigator() {
         component={HomeScreen}
         options={{
           title: STRINGS.nav.home,
+        }}
+      />
+
+      <Tab.Screen
+        name="Marketplace"
+        component={MarketplaceScreen}
+        options={{
+          title: STRINGS.nav.marketplace,
         }}
       />
       
